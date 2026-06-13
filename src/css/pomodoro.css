@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #FAFAFA;
+}
+.text-purple-brand { color: #8A7CFB; }
+.bg-purple-brand { background-color: #8A7CFB; }
+.bg-purple-light { background-color: #EBE9FE; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+.timer-circle { border-radius: 50%; }
+#progressRing { transition: stroke-dashoffset 1s linear; }
+#settingsPage { transition: opacity 0.25s ease; }
+#themeDropdown { transition: opacity 0.2s ease, transform 0.2s ease; transform-origin: top center; }
+#themeDropdown.hidden { opacity: 0; transform: translateY(-4px); pointer-events: none; }
+#themeDropdown:not(.hidden) { opacity: 1; transform: translateY(0); }
+.tag-bubble { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+#tagDropdown { transition: opacity 0.15s ease, transform 0.15s ease; transform-origin: top left; }
+#tagDropdown.hidden { opacity: 0; transform: translateY(-4px); pointer-events: none; }
+#tagDropdown:not(.hidden) { opacity: 1; transform: translateY(0); }
+.color-swatch { width: 24px; height: 24px; border-radius: 999px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s; }
+.color-swatch:hover, .color-swatch.selected { border-color: #374151; }

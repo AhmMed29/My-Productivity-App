@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #FAFAFA;
+}
+.home-clock {
+  font-size: 5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.home-date {
+  font-size: 1.25rem;
+  color: #6B7280;
+}
+.prayer-box {
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
