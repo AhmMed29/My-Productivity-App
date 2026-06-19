@@ -150,23 +150,5 @@ window.cancelEnd = function() {
   if (popup) popup.classList.add('hidden');
 };
 
-document.addEventListener('keydown', function(e) {
-  if (e.ctrlKey && (e.key === '=' || e.key === '+')) {
-    e.preventDefault();
-    window.db.setSetting('zoom', String(window.electronAPI.zoomIn()));
-  }
-  if (e.ctrlKey && e.key === '-') {
-    e.preventDefault();
-    window.db.setSetting('zoom', String(window.electronAPI.zoomOut()));
-  }
-  if (e.ctrlKey && e.key === '0') {
-    e.preventDefault();
-    window.db.setSetting('zoom', String(window.electronAPI.zoomReset()));
-  }
-});
-
-var savedZoom = window.db.getSetting('zoom');
-if (savedZoom) window.electronAPI.setZoom(parseFloat(savedZoom));
-
 initStats();
 updateSidebar();

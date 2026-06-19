@@ -166,6 +166,7 @@ function onSessionStart() {
     status: 'running'
   };
   renderTimeline();
+  renderSessionTimeline();
 }
 
 function onSessionPause() {
@@ -174,6 +175,7 @@ function onSessionPause() {
   activeSession.lastResumeTime = null;
   activeSession.status = 'paused';
   renderTimeline();
+  renderSessionTimeline();
 }
 
 function onSessionResume() {
@@ -181,6 +183,7 @@ function onSessionResume() {
   activeSession.lastResumeTime = Date.now();
   activeSession.status = 'running';
   renderTimeline();
+  renderSessionTimeline();
 }
 
 function onSessionComplete(focusMinutes, plannedMinutes) {
@@ -205,15 +208,18 @@ function onSessionComplete(focusMinutes, plannedMinutes) {
   window.db.saveSession(session);
   activeSession = null;
   renderTimeline();
+  renderSessionTimeline();
 }
 
 function onSessionCancel() {
   if (!activeSession) return;
   activeSession = null;
   renderTimeline();
+  renderSessionTimeline();
 }
 
 renderTimeline();
+renderSessionTimeline();
 
 // Event delegation for timeline entries
 document.addEventListener('click', function(e) {
@@ -373,12 +379,14 @@ window.saveSessionEdit = function() {
     activeSession.taskName = taskName;
     activeSession.tagId = editingTagForSession;
     renderTimeline();
+    renderSessionTimeline();
     var popup = document.getElementById('sessionPopup');
     if (popup) popup.classList.add('hidden');
     return;
   }
   window.db.updateSession(editingSessionId, taskName, editingTagForSession, '');
   renderTimeline();
+  renderSessionTimeline();
   var popup = document.getElementById('sessionPopup');
   if (popup) popup.classList.add('hidden');
 };
@@ -491,6 +499,7 @@ window.saveAddSession = function() {
   };
   window.db.saveSession(session);
   renderTimeline();
+  renderSessionTimeline();
   var popup = document.getElementById('addSessionPopup');
   if (popup) popup.classList.add('hidden');
 };
@@ -516,4 +525,241 @@ window.clearAddSessionTag = function() {
   if (td) td.classList.add('hidden');
 };
 
+/* ═══════════════════════════════════════
+   🎯 Session Timeline (Horizontal Flow)
+   التايم لاين الأفقي للجلسات - مستوحى من
+   Warm Focus design palette
+   ═══════════════════════════════════════ */
+
+/* ─── Helper: format duration (minutes → readable) ─── */
+function formatDuration(minutes) {
+  if (minutes < 1) return Math.round(minutes * 60) + 's';
+  if (minutes < 60) return Math.round(minutes) + 'm';
+  var h = Math.floor(minutes / 60);
+  var m = Math.round(minutes % 60);
+  return h + 'h ' + m + 'm';
+}
+
+/* ─── Helper: get today's sessions sorted by startTime ─── */
+function getTodaySessions() {
+  try {
+    var grouped = window.db.getSessionsGrouped() || {};
+    var key = todayKey();
+    var list = grouped[key] || [];
+    return list.sort(function(a, b) { return a.startTime - b.startTime; });
+  } catch(e) { return []; }
+}
+
+/* ─── Main render: draws the horizontal session timeline ───
+   كل نود في التايم لاين لها هيكل ثابت:
+   الوقت (فوق) → الدائرة (وسط) → المدة (تحت)
+   والـ connector خط رفيع بين كل نود والتانية
+   ───────────────────────────────────────────────────────── */
+function renderSessionTimeline() {
+  var track = document.getElementById('sessionTimelineTrack');
+  if (!track) return;
+
+  var todaySessions = getTodaySessions();
+  var connector = '<div class="flex-shrink-0" style="width:24px;height:1px;background:#E5E7EB"></div>';
+
+  /* ── Empty state: no sessions today ── */
+  if (todaySessions.length === 0 && !activeSession) {
+    track.innerHTML = '<div class="flex items-center gap-3 py-4" style="min-width:100%">' +
+      connector +
+      '<div class="flex flex-col items-center flex-shrink-0 relative z-10" onclick="openSessionTimelineModal(null)" style="cursor:pointer">' +
+        '<span style="font-size:11px;color:#9CA3AF;font-weight:500;white-space:nowrap;margin-bottom:8px;opacity:0">00:00</span>' +
+        '<div style="width:32px;height:32px;border-radius:50%;border:2px dashed #D1D5DB;display:flex;align-items:center;justify-content:center">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>' +
+        '</div>' +
+        '<span style="font-size:11px;color:#9CA3AF;font-weight:500;margin-top:8px;white-space:nowrap">Start</span>' +
+      '</div>' +
+    '</div>';
+    return;
+  }
+
+  /* ── Build node list: completed sessions + break + active + upcoming ── */
+  var allNodes = [];
+
+  for (var i = 0; i < todaySessions.length; i++) {
+    var s = todaySessions[i];
+    allNodes.push({ type: 'session', data: s, state: 'completed' });
+    if (i < todaySessions.length - 1 || activeSession) {
+      allNodes.push({ type: 'break' });
+    }
+  }
+
+  if (activeSession) {
+    allNodes.push({ type: 'session', data: activeSession, state: 'active' });
+  }
+
+  var futureCount = Math.max(2, 4 - allNodes.length);
+  for (var f = 0; f < futureCount; f++) {
+    if (f > 0 || (allNodes.length > 0 && allNodes[allNodes.length - 1].type === 'break')) {
+    } else {
+      allNodes.push({ type: 'break', upcoming: true });
+    }
+    allNodes.push({ type: 'session', state: 'upcoming' });
+  }
+
+  /* ── Generate HTML for all nodes ── */
+  var html = '';
+  for (var n = 0; n < allNodes.length; n++) {
+    var node = allNodes[n];
+
+    /* ─── BREAK node (نقطة الاستراحة - قابلة للضغط تفتح popup) ─── */
+    if (node.type === 'break') {
+      html += connector;
+      var breakCls = node.upcoming ? '#F3F4F6' : '#D1D5DB';
+      html += '<div class="flex flex-col items-center flex-shrink-0 relative z-10" onclick="openSessionTimelineModal(null)" style="cursor:pointer">';
+      html += '<span style="font-size:11px;color:#9CA3AF;font-weight:500;white-space:nowrap;margin-bottom:8px;opacity:0">Break</span>';
+      html += '<div style="width:14px;height:14px;border-radius:50%;background:' + breakCls + ';border:3px solid #fff;flex-shrink:0"></div>';
+      html += '<span style="font-size:11px;color:#9CA3AF;font-weight:500;margin-top:8px;opacity:0">0m</span>';
+      html += '</div>';
+      continue;
+    }
+
+    /* ─── COMPLETED session (جلسة منتهية - قابلة للضغط) ─── */
+    if (node.type === 'session' && node.state === 'completed') {
+      var s = node.data;
+      var timeLabel = formatTimeHM(s.startTime) + ' - ' + formatTimeHM(s.endTime);
+      var durLabel = formatDuration(s.focusMinutes);
+      html += connector;
+      html += '<div class="flex flex-col items-center flex-shrink-0 relative z-10" data-sid="' + s.id + '" onclick="openSessionTimelineModal(\'' + s.id + '\')" style="cursor:pointer">';
+      html += '<span style="font-size:11px;color:#6B7280;font-weight:500;white-space:nowrap;margin-bottom:8px">' + timeLabel + '</span>';
+      html += '<div style="width:32px;height:32px;border-radius:50%;background:#DBEAFE;color:#3B82F6;display:flex;align-items:center;justify-content:center;border:4px solid #fff;flex-shrink:0">';
+      html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+      html += '</div>';
+      html += '<span style="font-size:11px;color:#6B7280;font-weight:500;margin-top:8px;white-space:nowrap">' + durLabel + '</span>';
+      html += '</div>';
+    }
+
+    /* ─── ACTIVE session (الجلسة الحالية - قابلة للضغط) ─── */
+    if (node.type === 'session' && node.state === 'active') {
+      var now = Date.now();
+      var elapsedInCurrentRun = activeSession.lastResumeTime ? now - activeSession.lastResumeTime : 0;
+      var totalElapsed = activeSession.accumulatedMs + elapsedInCurrentRun;
+      var estEnd = now + remainingSeconds * 1000;
+      var timeLabel = formatTimeHM(activeSession.startTime) + ' - ' + formatTimeHM(estEnd);
+      var durLabel = formatDuration(totalElapsed / 60000);
+      html += connector;
+      html += '<div class="flex flex-col items-center flex-shrink-0 relative z-10" data-sid="' + activeSession.id + '" onclick="openSessionTimelineModal(\'' + activeSession.id + '\')" style="cursor:pointer">';
+      html += '<span style="font-size:11px;color:#3B82F6;font-weight:700;white-space:nowrap;margin-bottom:8px">' + timeLabel + '</span>';
+      html += '<div style="width:32px;height:32px;border-radius:50%;background:#BFDBFE;color:#1D4ED8;display:flex;align-items:center;justify-content:center;border:4px solid #fff;flex-shrink:0;box-shadow:0 0 12px rgba(59,130,246,0.25)">';
+      html += '<div style="width:6px;height:6px;border-radius:50%;background:#1D4ED8;animation:pulse-dot 1.5s ease-in-out infinite"></div>';
+      html += '</div>';
+      html += '<span style="font-size:11px;color:#3B82F6;font-weight:500;margin-top:8px;white-space:nowrap">' + durLabel + '</span>';
+      html += '</div>';
+    }
+
+    /* ─── UPCOMING session (جلسة قادمة) ─── */
+    if (node.type === 'session' && node.state === 'upcoming') {
+      html += connector;
+      html += '<div class="flex flex-col items-center flex-shrink-0 relative z-10" style="opacity:0.5">';
+      html += '<span style="font-size:11px;color:#9CA3AF;font-weight:500;white-space:nowrap;margin-bottom:8px">--:--</span>';
+      html += '<div style="width:32px;height:32px;border-radius:50%;background:#F3F4F6;border:4px solid #fff;flex-shrink:0"></div>';
+      html += '<span style="font-size:11px;color:#9CA3AF;font-weight:500;margin-top:8px;white-space:nowrap">--m</span>';
+      html += '</div>';
+    }
+  }
+
+  html = html.replace(connector, ''); /* remove leading connector before first node */
+  track.innerHTML = html;
+
+  /* ── Auto-scroll to latest (rightmost) session ── */
+  var scrollEl = document.getElementById('sessionTimelineScroll');
+  if (scrollEl) {
+    scrollEl.scrollLeft = scrollEl.scrollWidth;
+  }
+}
+
+/* ─── Scroll behavior: vertical wheel → horizontal scroll ───
+   عشان السكرول العمودي يشتغل أفقي جوه التايم لاين
+   ──────────────────────────────────────────────────────────── */
+(function() {
+  var scrollEl = document.getElementById('sessionTimelineScroll');
+  if (scrollEl) {
+    scrollEl.addEventListener('wheel', function(e) {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        this.scrollBy({ left: e.deltaY, behavior: 'auto' });
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+})();
+
+var sessionTimelineEditId = null;
+
+window.openSessionTimelineModal = function(sessionId) {
+  sessionTimelineEditId = sessionId;
+  var modal = document.getElementById('sessionTimelineModal');
+  var input = document.getElementById('sessionTimelineTaskInput');
+  if (!modal || !input) return;
+
+  if (sessionId) {
+    var session = null;
+    if (activeSession && activeSession.id === sessionId) {
+      session = activeSession;
+    } else {
+      var todaySessions = getTodaySessions();
+      for (var i = 0; i < todaySessions.length; i++) {
+        if (todaySessions[i].id === sessionId) { session = todaySessions[i]; break; }
+      }
+    }
+    input.value = session ? (session.taskName || '') : '';
+  } else {
+    input.value = '';
+  }
+
+  modal.classList.add('open');
+  setTimeout(function() { input.focus(); }, 100);
+};
+
+window.closeSessionTimelineModal = function() {
+  var modal = document.getElementById('sessionTimelineModal');
+  if (modal) modal.classList.remove('open');
+};
+
+window.saveSessionTimeline = function() {
+  var taskName = (document.getElementById('sessionTimelineTaskInput').value || '').trim();
+
+  if (sessionTimelineEditId && activeSession && activeSession.id === sessionTimelineEditId) {
+    activeSession.taskName = taskName;
+  } else if (sessionTimelineEditId) {
+    window.db.updateSession(sessionTimelineEditId, taskName, null, '');
+  }
+
+  renderTimeline();
+  renderSessionTimeline();
+  window.closeSessionTimelineModal();
+};
+
+window.toggleTaskPopup = function() {
+  var toggle = document.getElementById('taskPopupToggle');
+  if (!toggle) return;
+  var currentlyOn = toggle.classList.contains('active');
+  if (currentlyOn) {
+    toggle.classList.remove('active');
+    window.db.setSetting('showTaskPopupOnStart', 'false');
+  } else {
+    toggle.classList.add('active');
+    window.db.setSetting('showTaskPopupOnStart', 'true');
+  }
+};
+
+(function() {
+  var setting = window.db.getSetting('showTaskPopupOnStart');
+  var toggle = document.getElementById('taskPopupToggle');
+  if (toggle && setting === 'false') {
+    toggle.classList.remove('active');
+  }
+})();
+
+document.addEventListener('click', function(e) {
+  var modal = document.getElementById('sessionTimelineModal');
+  if (modal && e.target === modal) {
+    modal.classList.remove('open');
+  }
+});
+
 renderTimeline();
+renderSessionTimeline();

@@ -1,18 +1,33 @@
 <!DOCTYPE html>
-
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
 <title>My Productivity App</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com" rel="preconnect">
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']},colors:{tickblue:{DEFAULT:'#3b82f6',light:'#eff6ff'},tickgray:{100:'#f3f4f6',200:'#e5e7eb',300:'#d1d5db',400:'#9ca3af',500:'#6b7280',600:'#4b5563'}}}}}</script>
+<script>
+tailwind.config={
+  theme:{
+    extend:{
+      fontFamily:{sans:['Manrope','Tajawal','sans-serif']},
+      colors:{
+        tickblue:{DEFAULT:'#3b82f6',light:'#eff6ff'},
+        tickgray:{100:'#f3f4f6',200:'#e5e7eb',300:'#d1d5db',400:'#9ca3af',500:'#6b7280',600:'#4b5563'},
+        warm:{bg:'#fffcf3',surface:'#f3ece3',surfaceLow:'#f8f2e9',surfaceHigh:'#e8e1d9',primary:'#80551d',primaryContainer:'#ffddb9',outline:'#817567',outlineVar:'#d3c4b4',onSurface:'#1e1b16',onSurfaceVar:'#4f4539'}
+      }
+    }
+  }
+}
+</script>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="css/pomodoro.css">
 <link rel="stylesheet" href="css/home.css">
 <link rel="stylesheet" href="css/habits.css">
+<link rel="stylesheet" href="css/ahmeds-styles.css">
 <style>
 .sticky-col { position: sticky; right: 0; z-index: 10; }
 .sticky-header { position: sticky; top: 0; background-color: #fdfdfd; z-index: 20; }
@@ -47,7 +62,6 @@
 </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col text-gray-800">
-<!-- Title Bar -->
 <div class="flex-shrink-0 h-[32px] bg-white border-b border-gray-100 flex items-center justify-between select-none" id="titlebar">
 <div class="flex-1 h-full" id="drag-region" style="-webkit-app-region: drag"></div>
 <div class="flex h-full">
@@ -63,7 +77,6 @@
 </div>
 </div>
 <div class="flex flex-1 overflow-hidden">
-<!-- SIDEBAR -->
 <nav aria-label="Main Navigation" class="w-[56px] h-full flex flex-col items-center py-4 justify-between shrink-0" id="navSidebar">
 <div class="flex flex-col items-center gap-6 w-full">
 <button aria-label="Home" class="text-white/70 hover:text-white transition-colors" data-page="home" onclick="showPage('home')">
@@ -83,78 +96,50 @@
 </div>
 </nav>
 
-<!-- PAGE: HOME -->
-<div id="page-home" class="hidden flex-1 flex flex-col items-center justify-center bg-white">
-  <div class="text-center">
-    <div class="home-clock text-gray-800 mb-2" id="clockDisplay">00:00</div>
-    <div class="home-date mb-10" id="dateDisplay">...</div>
-    <div class="prayer-box w-[400px] mx-auto">
-      <h2 class="text-lg font-semibold text-gray-800 mb-2">🕌 أوقات الصلاة</h2>
-      <p class="text-sm text-gray-400">سيتم إضافة مواقيت الصلاة قريباً</p>
-    </div>
-  </div>
-</div>
+<div id="page-home" class="hidden flex-1 flex-col items-center justify-center bg-white px-4"></div>
 
-<!-- PAGE: POMODORO -->
-<div id="page-pomodoro" class="flex flex-1 overflow-hidden">
-<main class="flex-1 bg-white flex flex-col relative h-full" id="mainArea">
-<header class="flex justify-between items-center p-6 w-full absolute top-0 left-0">
+<div id="page-pomodoro" class="flex flex-1 overflow-hidden min-h-0">
+<main class="flex-1 bg-white flex flex-col relative h-full overflow-hidden" id="mainArea">
+<header class="flex justify-between items-center p-6 w-full absolute top-0 left-0 z-10 bg-white/80 backdrop-blur-sm">
 <h1 class="text-xl font-semibold">Pomodoro</h1>
 <div class="flex bg-gray-100 rounded-full p-1 absolute left-1/2 -translate-x-1/2">
-<button class="px-6 py-1.5 rounded-full text-sm font-medium bg-purple-light text-purple-brand shadow-sm">Pomo</button>
+<button class="px-6 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-600 shadow-sm">Pomo</button>
 </div>
 </header>
-<div class="flex-1 flex flex-col items-center justify-center">
+<div class="flex-1 flex flex-col items-center justify-center min-h-0 overflow-y-auto p-4">
 <div class="text-gray-400 text-sm mb-8 flex items-center gap-1 cursor-pointer hover:text-gray-600 transition-colors">
         Focus <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </div>
-<div class="w-[400px] h-[400px] timer-circle flex items-center justify-center mb-16 relative" id="timerCircle">
+<div class="w-full max-w-[320px] sm:max-w-[400px] aspect-square timer-circle flex items-center justify-center mb-16 relative" id="timerCircle">
 <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 400 400">
 <circle cx="200" cy="200" fill="none" r="192" stroke="#F3F4F6" stroke-width="8" id="progressBg"></circle>
-<circle cx="200" cy="200" fill="none" r="192" stroke="#3B82F6" stroke-linecap="round" stroke-width="8" stroke-dasharray="1214.37" stroke-dashoffset="1224.37" id="progressRing"></circle>
+<circle cx="200" cy="200" fill="none" r="192" stroke="#C85A17" stroke-linecap="round" stroke-width="8" stroke-dasharray="1214.37" stroke-dashoffset="1224.37" id="progressRing"></circle>
 </svg>
-<div class="text-7xl font-light text-gray-800 tracking-tight cursor-pointer" id="timerText" onclick="openTimePopup()">50:00</div>
+<div class="text-6xl sm:text-7xl font-light text-gray-800 tracking-tight cursor-pointer" id="timerText" onclick="openTimePopup()">50:00</div>
 </div>
 <div class="flex items-center justify-center gap-4">
-<button class="bg-blue-600 hover:bg-opacity-90 active:scale-95 text-white font-medium text-lg px-16 py-3 rounded-full shadow-md cursor-pointer select-none" id="startBtn" onclick="toggleTimer()">Start</button>
-<button class="bg-red-500 hover:bg-red-600 active:scale-95 text-white font-medium text-lg px-10 py-3 rounded-full shadow-md cursor-pointer select-none hidden" id="endBtn" onclick="openEndPopup()">End</button>
+<button class="bg-blue-600 hover:bg-opacity-90 active:scale-95 text-white font-medium text-lg px-12 sm:px-16 py-3 rounded-full shadow-md cursor-pointer select-none" id="startBtn" onclick="toggleTimer()">Start</button>
+<button class="bg-red-500 hover:bg-red-600 active:scale-95 text-white font-medium text-lg px-8 sm:px-10 py-3 rounded-full shadow-md cursor-pointer select-none hidden" id="endBtn" onclick="openEndPopup()">End</button>
 </div>
-</div>
-</main>
-<aside class="w-[420px] bg-white border-l border-gray-100 flex flex-col h-full z-10 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.02)]" id="asideArea">
-<div class="flex justify-end p-3 text-gray-400 items-center"></div>
-<div class="px-6 flex-1 overflow-y-auto custom-scrollbar pb-6">
-<h2 class="text-xl font-medium mb-6">Overview</h2>
-<div class="grid grid-cols-2 gap-3 mb-10">
-<div class="bg-[#F5F6F8] p-4 rounded-xl">
-<p class="text-xs text-gray-400 mb-1">Today's Pomos</p>
-<p class="text-2xl font-medium" id="todayPomosValue">0</p>
-</div>
-<div class="bg-[#F5F6F8] p-4 rounded-xl">
-<p class="text-xs text-gray-400 mb-1">Today's Focus Duration</p>
-<p class="text-2xl font-medium flex items-baseline gap-1"><span id="todayDurationValue">0</span> <span class="text-sm font-normal text-gray-500">m</span></p>
-</div>
-<div class="bg-[#F5F6F8] p-4 rounded-xl">
-<p class="text-xs text-gray-400 mb-1">Total Pomos</p>
-<p class="text-2xl font-medium" id="totalPomosValue">0</p>
-</div>
-<div class="bg-[#F5F6F8] p-4 rounded-xl">
-<p class="text-xs text-gray-400 mb-1">Total Focus Duration</p>
-<p class="text-2xl font-medium flex items-baseline gap-1"><span id="totalDurationHours">0</span> <span class="text-sm font-normal text-gray-500">h</span> <span id="totalDurationMins">0</span> <span class="text-sm font-normal text-gray-500">m</span></p>
-</div>
-</div>
-<div class="flex justify-between items-center mb-6">
-<h3 class="text-lg font-medium">Focus Record</h3>
-<button class="text-gray-400 hover:text-gray-600" onclick="openAddSessionPopup()"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
-</div>
-<div id="focusTimeline" class="relative pl-3">
-<div class="absolute left-4 top-2 bottom-0 w-px bg-gray-100"></div>
-</div>
-</div>
-</aside>
 </div>
 
-<!-- PAGE: HABITS -->
+<div class="session-timeline-container w-full px-6 pb-4">
+  <div class="rounded-xl p-4 relative overflow-hidden" style="background:#F9FAFB;border:1px solid #E5E7EB">
+    <div class="session-timeline-fade-left"></div>
+    <div class="session-timeline-fade-right"></div>
+    <div class="session-timeline-scroll" id="sessionTimelineScroll">
+      <div class="session-timeline-track" id="sessionTimelineTrack">
+        <div class="text-sm text-center py-6 px-4" style="color:#9CA3AF;min-width:100%" id="sessionTimelineEmpty">
+          No sessions yet. Press Start to begin your first Pomodoro.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+</div>
+
 <div id="page-habits" class="hidden flex-1 flex flex-col overflow-hidden" dir="rtl">
 <header class="flex-none px-6 py-4 flex justify-between items-center border-b border-gray-100 bg-white shadow-sm">
 <div class="flex items-center gap-3">
@@ -189,7 +174,7 @@
 </div>
 </div>
 <div id="add-modal">
-<div class="modal-card" dir="rtl" style="width:480px">
+<div class="modal-card" dir="rtl" style="width:100%; max-width:480px;">
 <button class="close-btn" id="add-modal-close">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -352,16 +337,25 @@ if (e.target === addModal) addModal.classList.remove('open');
 });
 </script>
 
-<!-- PAGE: SETTINGS -->
-<div id="page-settings" class="hidden flex-1 flex flex-col bg-white">
-<div class="max-w-2xl mx-auto pt-12">
+<div id="page-settings" class="hidden flex-1 flex flex-col bg-white overflow-auto p-4">
+<div class="w-full max-w-2xl mx-auto pt-12">
 <h1 class="text-2xl font-semibold text-gray-800 mb-8">Settings</h1>
-<div class="bg-gray-50 rounded-2xl p-8 mt-6">
-<h2 class="text-lg font-medium text-gray-800 mb-6">مكان الحفظ</h2>
+<div class="bg-gray-50 rounded-2xl p-6 sm:p-8 mt-6">
+<h2 class="text-lg font-medium text-gray-800 mb-4">Show task popup on Start</h2>
 <div class="flex items-center justify-between">
+  <span class="text-sm text-gray-500">Ask for task name when starting a session</span>
+  <div class="toggle-switch active" id="taskPopupToggle" onclick="toggleTaskPopup()">
+    <div class="toggle-knob"></div>
+  </div>
+</div>
+</div>
+
+<div class="bg-gray-50 rounded-2xl p-6 sm:p-8 mt-6">
+<h2 class="text-lg font-medium text-gray-800 mb-6">مكان الحفظ</h2>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 <span class="text-gray-700 font-medium text-base">المسار الحالي</span>
-<div class="flex items-center gap-3">
-<span class="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border border-gray-200 max-w-[300px] truncate" id="storagePathDisplay">...</span>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<span class="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border border-gray-200 max-w-full sm:max-w-[300px] truncate flex-1" id="storagePathDisplay">...</span>
 <button onclick="selectStoragePath()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors">تغيير</button>
 </div>
 </div>
@@ -372,9 +366,9 @@ if (e.target === addModal) addModal.classList.remove('open');
 </div>
 </div>
 </div>
-<!-- Time Setting Popup -->
+
 <div id="timePopup" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 hidden" onclick="closeTimePopup(event)">
-  <div class="bg-white rounded-2xl p-8 shadow-xl w-96" onclick="event.stopPropagation()">
+  <div class="bg-white rounded-2xl p-8 shadow-xl w-96 max-w-[90vw]" onclick="event.stopPropagation()">
     <h3 class="text-xl font-medium mb-5 text-gray-800">Set Timer</h3>
     <div class="flex items-center gap-3 mb-6">
       <input type="number" id="timeInput" value="50" min="1" max="999" class="w-full border border-gray-200 rounded-lg px-5 py-3 text-2xl text-center focus:outline-none focus:ring-2 focus:ring-blue-400">
@@ -384,20 +378,19 @@ if (e.target === addModal) addModal.classList.remove('open');
   </div>
 </div>
 
-<!-- End Confirm Popup -->
 <div id="endPopup" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 hidden" onclick="closeEndPopup(event)">
-  <div class="bg-white rounded-2xl p-8 shadow-xl w-96" onclick="event.stopPropagation()">
+  <div class="bg-white rounded-2xl p-8 shadow-xl w-96 max-w-[90vw]" onclick="event.stopPropagation()">
     <h3 class="text-xl font-medium mb-5 text-gray-800">End Session</h3>
     <p class="text-gray-600 text-sm mb-6">Your pomodoro will be stopped and the elapsed time will be saved.</p>
     <div class="flex justify-end gap-3">
       <button onclick="cancelEnd()" class="px-6 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-colors font-medium">Cancel</button>
       <button onclick="confirmEnd()" class="px-6 py-2.5 bg-red-500 text-white rounded-xl text-sm font-medium hover:bg-red-600 transition-colors">End And Save</button>
+    </div>
   </div>
 </div>
 
-<!-- Session Edit Popup -->
 <div id="sessionPopup" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 hidden" onclick="closeSessionPopup(event)">
-  <div class="bg-white rounded-2xl p-8 shadow-xl w-96" onclick="event.stopPropagation()">
+  <div class="bg-white rounded-2xl p-8 shadow-xl w-96 max-w-[90vw]" onclick="event.stopPropagation()">
     <h3 class="text-xl font-medium mb-5 text-gray-800">Edit Session</h3>
     <div class="mb-4">
       <label class="text-sm text-gray-500 mb-1 block">Task Name</label>
@@ -426,9 +419,8 @@ if (e.target === addModal) addModal.classList.remove('open');
   </div>
 </div>
 
-<!-- New Tag Popup -->
 <div id="newTagPopup" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 hidden" onclick="closeNewTagPopup(event)">
-  <div class="bg-white rounded-2xl p-8 shadow-xl w-80" onclick="event.stopPropagation()">
+  <div class="bg-white rounded-2xl p-8 shadow-xl w-80 max-w-[90vw]" onclick="event.stopPropagation()">
     <h3 class="text-xl font-medium mb-5 text-gray-800">New Tag</h3>
     <div class="mb-4">
       <label class="text-sm text-gray-500 mb-1 block">Tag Name</label>
@@ -445,9 +437,8 @@ if (e.target === addModal) addModal.classList.remove('open');
   </div>
 </div>
 
-<!-- Add Session Popup -->
 <div id="addSessionPopup" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 hidden" onclick="closeAddSessionPopup(event)">
-  <div class="bg-white rounded-2xl p-8 shadow-xl w-96" onclick="event.stopPropagation()">
+  <div class="bg-white rounded-2xl p-8 shadow-xl w-96 max-w-[90vw]" onclick="event.stopPropagation()">
     <h3 class="text-xl font-medium mb-5 text-gray-800">Add Session</h3>
     <div class="mb-3">
       <label class="text-sm text-gray-500 mb-1 block">Task Name</label>
@@ -481,6 +472,29 @@ if (e.target === addModal) addModal.classList.remove('open');
 </div>
 </div>
 
+<div id="sessionTimelineModal">
+  <div class="modal-card" style="width:100%; max-width:480px;">
+    <button class="close-btn" id="sessionTimelineModalClose">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <h3 class="text-xl font-medium mb-5 text-gray-800">Session Details</h3>
+    <div class="mb-4">
+      <label class="text-sm text-gray-500 mb-1 block">Task Name</label>
+      <input type="text" id="sessionTimelineTaskInput" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-base focus:outline-none" placeholder="e.g. Coding">
+    </div>
+    <div class="mb-6">
+      <label class="text-sm text-gray-500 mb-1 block">Tags</label>
+      <div id="sessionTimelineTagDisplay" class="text-xs text-gray-400">Coming soon</div>
+    </div>
+    <div class="flex justify-end gap-3">
+      <button onclick="closeSessionTimelineModal()" class="px-6 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-colors font-medium">Cancel</button>
+      <button onclick="saveSessionTimeline()" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-opacity-90 transition-colors">Save</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/storage.js"></script>
 <script src="js/stats.js"></script>
 <script src="js/timer.js"></script>
@@ -512,26 +526,28 @@ function showPage(name) {
   }
 }
 
-function updateClock() {
-  var now = new Date();
-  document.getElementById('clockDisplay').textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-  var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('dateDisplay').textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
-}
-updateClock();
-setInterval(updateClock, 1000);
-
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && (e.key === '=' || e.key === '+')) { e.preventDefault(); window.electronAPI.zoomIn(); }
   if (e.ctrlKey && e.key === '-') { e.preventDefault(); window.electronAPI.zoomOut(); }
   if (e.ctrlKey && e.key === '0') { e.preventDefault(); window.electronAPI.zoomReset(); }
 });
 
-showPage('home');
+function updateClock() {
+  var now = new Date();
+  var clk = document.getElementById('clockDisplay');
+  if(clk) clk.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+  var dateEl = document.getElementById('dateDisplay');
+  if(dateEl) {
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    dateEl.textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  }
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+showPage('pomodoro');
 </script>
 
-
-
-
-</body></html>
+</body>
+</html>
