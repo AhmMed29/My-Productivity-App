@@ -1,25 +1,14 @@
-// stats.js - pomodoro statistics (localStorage-based, same as original)
-
-var STATS_KEY = 'pomodoro_stats';
-var DURATION_KEY = 'last_pomodoro_minutes';
-
-window.initStats = function () {
-  var stats = JSON.parse(localStorage.getItem(STATS_KEY));
-  var today = new Date().toISOString().split('T')[0];
-  if (!stats) {
-    stats = { todayPomos: 0, todayFocusMinutes: 0, totalPomos: 0, totalFocusMinutes: 0, lastDate: today };
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  } else if (stats.lastDate !== today) {
-    stats.todayPomos = 0;
-    stats.todayFocusMinutes = 0;
-    stats.lastDate = today;
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  }
-};
+window.initStats = function () {};
 
 window.getStats = function () {
-  var s = localStorage.getItem(STATS_KEY);
-  return s ? JSON.parse(s) : { todayPomos: 0, todayFocusMinutes: 0, totalPomos: 0, totalFocusMinutes: 0, lastDate: new Date().toISOString().split('T')[0] };
+  var todayStats = window.db.getTodayStats();
+  var totalStats = window.db.getTotalStats();
+  return {
+    todayPomos: todayStats.todayPomos,
+    todayFocusMinutes: todayStats.todayFocusMinutes,
+    totalPomos: totalStats.totalPomos,
+    totalFocusMinutes: totalStats.totalFocusMinutes
+  };
 };
 
 window.updateSidebar = function () {

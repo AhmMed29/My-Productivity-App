@@ -4,6 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
+    "postinstall": "npx @electron/rebuild",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ."
   },
@@ -12,6 +13,10 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@electron/rebuild": "^4.0.4",
     "electron": "^42.4.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1"
   }
 }

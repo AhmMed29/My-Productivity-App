@@ -14,3 +14,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
   selectFolder: () => ipcRenderer.invoke('select-folder'),
   getDefaultPath: () => ipcRenderer.invoke('get-default-path')
 })
+
+contextBridge.exposeInMainWorld('db', {
+  init: () => ipcRenderer.invoke('db:init'),
+  getSetting: (key) => ipcRenderer.sendSync('db:get-setting', key),
+  setSetting: (key, value) => ipcRenderer.invoke('db:set-setting', key, value),
+  getAllSettings: () => ipcRenderer.sendSync('db:get-all-settings'),
+  getTags: () => ipcRenderer.sendSync('db:get-tags'),
+  saveTag: (tag) => ipcRenderer.invoke('db:save-tag', tag),
+  deleteTag: (id) => ipcRenderer.invoke('db:delete-tag', id),
+  getSessionsGrouped: () => ipcRenderer.sendSync('db:get-sessions-grouped'),
+  saveSession: (session) => ipcRenderer.invoke('db:save-session', session),
+  updateSession: (id, taskName, tagId, note) => ipcRenderer.invoke('db:update-session', id, taskName, tagId, note),
+  getTodayStats: () => ipcRenderer.sendSync('db:get-today-stats'),
+  getTotalStats: () => ipcRenderer.sendSync('db:get-total-stats'),
+  getPath: () => ipcRenderer.sendSync('db:get-path'),
+  setPath: (newPath) => ipcRenderer.invoke('db:set-path', newPath)
+})

@@ -1,7 +1,8 @@
-// timer.js - pomodoro timer logic (localStorage-based)
+// timer.js - pomodoro timer logic (SQLite-based)
 
 var DASHARRAY = 2 * Math.PI * 192 + 8;
-var totalSeconds = (parseInt(localStorage.getItem('last_pomodoro_minutes')) || 50) * 60;
+var savedMinutes = window.db.getSetting('timerMinutes');
+var totalSeconds = (parseInt(savedMinutes) || 50) * 60;
 var remainingSeconds = totalSeconds;
 var isRunning = false;
 var timerId = null;
@@ -109,10 +110,6 @@ function startTimer() {
 
 function saveFocusMinutes(mins) {
   if (mins < 0.01) return;
-  var stats = window.getStats();
-  stats.todayFocusMinutes += mins;
-  stats.totalFocusMinutes += mins;
-  localStorage.setItem('pomodoro_stats', JSON.stringify(stats));
   window.updateSidebar();
 }
 
@@ -120,10 +117,6 @@ function completeTimer() {
   stopTimer();
   if (startBtn) startBtn.textContent = 'Start';
   if (endBtn) endBtn.classList.add('hidden');
-  var stats = window.getStats();
-  stats.todayPomos++;
-  stats.totalPomos++;
-  localStorage.setItem('pomodoro_stats', JSON.stringify(stats));
   saveFocusMinutes(totalSeconds / 60);
 }
 
@@ -160,19 +153,19 @@ window.cancelEnd = function() {
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && (e.key === '=' || e.key === '+')) {
     e.preventDefault();
-    localStorage.setItem('zoom_factor', window.electronAPI.zoomIn());
+    window.db.setSetting('zoom', String(window.electronAPI.zoomIn()));
   }
   if (e.ctrlKey && e.key === '-') {
     e.preventDefault();
-    localStorage.setItem('zoom_factor', window.electronAPI.zoomOut());
+    window.db.setSetting('zoom', String(window.electronAPI.zoomOut()));
   }
   if (e.ctrlKey && e.key === '0') {
     e.preventDefault();
-    localStorage.setItem('zoom_factor', window.electronAPI.zoomReset());
+    window.db.setSetting('zoom', String(window.electronAPI.zoomReset()));
   }
 });
 
-var savedZoom = localStorage.getItem('zoom_factor');
+var savedZoom = window.db.getSetting('zoom');
 if (savedZoom) window.electronAPI.setZoom(parseFloat(savedZoom));
 
 initStats();

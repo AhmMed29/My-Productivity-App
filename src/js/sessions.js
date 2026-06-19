@@ -1,7 +1,5 @@
-// sessions.js - sessions and tags management (localStorage-based)
+// sessions.js - sessions and tags management (SQLite-based)
 
-var SESSIONS_KEY = 'pomodoro_sessions';
-var TAGS_KEY = 'pomodoro_tags';
 var activeSession = null;
 var editingSessionId = null;
 var editingTagForSession = null;
@@ -9,21 +7,17 @@ var addSessionTagId = null;
 var selectedTagColor = '#3B82F6';
 
 function getTags() {
-  var s = localStorage.getItem(TAGS_KEY);
-  return s ? JSON.parse(s) : [];
+  try { return window.db.getTags() || []; } catch(e) { return []; }
 }
 
 function saveTags(tags) {
-  localStorage.setItem(TAGS_KEY, JSON.stringify(tags));
+  for (var i = 0; i < tags.length; i++) {
+    window.db.saveTag(tags[i]);
+  }
 }
 
 function getSessions() {
-  var s = localStorage.getItem(SESSIONS_KEY);
-  return s ? JSON.parse(s) : {};
-}
-
-function saveSessions(sessions) {
-  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+  try { return window.db.getSessionsGrouped() || {}; } catch(e) { return {}; }
 }
 
 function todayKey() {
@@ -189,7 +183,7 @@ function onSessionResume() {
   renderTimeline();
 }
 
-function onSessionComplete(focusMinutes) {
+function onSessionComplete(focusMinutes, plannedMinutes) {
   if (!activeSession) return;
   if (activeSession.lastResumeTime) {
     activeSession.accumulatedMs += Date.now() - activeSession.lastResumeTime;
@@ -202,15 +196,13 @@ function onSessionComplete(focusMinutes) {
     id: activeSession.id,
     startTime: activeSession.startTime,
     endTime: endTime,
+    plannedMinutes: plannedMinutes || focusMinutes,
     focusMinutes: focusMinutes,
     taskName: activeSession.taskName || '',
+    note: activeSession.note || '',
     tagId: activeSession.tagId || null
   };
-  var sessions = getSessions();
-  var key = todayKey();
-  if (!sessions[key]) sessions[key] = [];
-  sessions[key].push(session);
-  saveSessions(sessions);
+  window.db.saveSession(session);
   activeSession = null;
   renderTimeline();
 }
@@ -253,12 +245,13 @@ completeTimer = function() {
   var td = document.getElementById('tagDropdown');
   if (td) td.classList.add('hidden');
   var elapsedSec = totalSeconds - remainingSeconds;
+  var plannedMinutes = totalSeconds / 60;
   if (activeSession && activeSession.lastResumeTime) {
     activeSession.accumulatedMs += Date.now() - activeSession.lastResumeTime;
     activeSession.lastResumeTime = null;
   }
   _origCompleteTimer();
-  onSessionComplete(elapsedSec / 60);
+  onSessionComplete(elapsedSec / 60, plannedMinutes);
 };
 
 var _origConfirmEnd = window.confirmEnd;
@@ -268,12 +261,13 @@ window.confirmEnd = function() {
   var td = document.getElementById('tagDropdown');
   if (td) td.classList.add('hidden');
   var elapsedSec = totalSeconds - remainingSeconds;
+  var plannedMinutes = totalSeconds / 60;
   if (activeSession && activeSession.lastResumeTime) {
     activeSession.accumulatedMs += Date.now() - activeSession.lastResumeTime;
     activeSession.lastResumeTime = null;
   }
   _origConfirmEnd();
-  onSessionComplete(elapsedSec / 60);
+  onSessionComplete(elapsedSec / 60, plannedMinutes);
 };
 
 var _origSetTimer = window.setTimer;
@@ -383,21 +377,10 @@ window.saveSessionEdit = function() {
     if (popup) popup.classList.add('hidden');
     return;
   }
-  var sessions = getSessions();
-  var keys = Object.keys(sessions);
-  for (var k = 0; k < keys.length; k++) {
-    for (var e = 0; e < sessions[keys[k]].length; e++) {
-      if (sessions[keys[k]][e].id === editingSessionId) {
-        sessions[keys[k]][e].taskName = taskName;
-        sessions[keys[k]][e].tagId = editingTagForSession;
-        saveSessions(sessions);
-        renderTimeline();
-        var popup = document.getElementById('sessionPopup');
-        if (popup) popup.classList.add('hidden');
-        return;
-      }
-    }
-  }
+  window.db.updateSession(editingSessionId, taskName, editingTagForSession, '');
+  renderTimeline();
+  var popup = document.getElementById('sessionPopup');
+  if (popup) popup.classList.add('hidden');
 };
 
 function renderSessionTagDisplay() {
@@ -500,15 +483,13 @@ window.saveAddSession = function() {
     id: 's_' + now,
     startTime: now - duration * 60000,
     endTime: now,
+    plannedMinutes: duration,
     focusMinutes: duration,
     taskName: taskName,
+    note: '',
     tagId: addSessionTagId || null
   };
-  var sessions = getSessions();
-  var key = todayKey();
-  if (!sessions[key]) sessions[key] = [];
-  sessions[key].push(session);
-  saveSessions(sessions);
+  window.db.saveSession(session);
   renderTimeline();
   var popup = document.getElementById('addSessionPopup');
   if (popup) popup.classList.add('hidden');
