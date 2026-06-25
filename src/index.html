@@ -59,6 +59,56 @@ tailwind.config={
 .hpi:hover, .hpi:hover .sticky-col { background-color: #fdf2f8 !important; }
 .hor:hover, .hor:hover .sticky-col { background-color: #fff7ed !important; }
 .hpu:hover, .hpu:hover .sticky-col { background-color: #faf5ff !important; }
+/* Sidebar styles */
+#sidebar-container {
+  transition: width 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #3B82F6;
+  flex-shrink: 0;
+}
+#sidebar-container.sidebar-collapsed {
+  width: 60px;
+}
+#sidebar-container.sidebar-expanded {
+  width: 220px;
+}
+#sidebar-container .nav-label {
+  display: none;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s ease 0.1s;
+}
+#sidebar-container.sidebar-expanded .nav-label {
+  display: inline;
+  opacity: 1;
+}
+#sidebar-container .nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+#sidebar-container.sidebar-expanded button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 16px;
+  justify-content: flex-start;
+}
+#sidebar-container.sidebar-collapsed button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0;
+}
 </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col text-gray-800">
@@ -77,24 +127,30 @@ tailwind.config={
 </div>
 </div>
 <div class="flex flex-1 overflow-hidden">
-<nav aria-label="Main Navigation" class="w-[56px] h-full flex flex-col items-center py-4 justify-between shrink-0" id="navSidebar">
+<div id="sidebar-container" class="sidebar-collapsed">
+<nav aria-label="Main Navigation" class="h-full w-full flex flex-col items-center py-4 justify-between shrink-0" id="navSidebar">
 <div class="flex flex-col items-center gap-6 w-full">
-<button aria-label="Home" class="text-white/70 hover:text-white transition-colors" data-page="home" onclick="showPage('home')">
-<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+<button aria-label="Home" class="text-white/70 hover:text-white transition-colors" data-page="home" onclick="showPage('home')" data-label="home">
+<span class="nav-icon"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></span>
+<span class="nav-label">Home</span>
 </button>
-<button aria-label="Pomodoro" class="text-white/70 hover:text-white transition-colors" data-page="pomodoro" onclick="showPage('pomodoro')">
-<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="none" r="10" stroke="currentColor" stroke-width="2"></circle><circle cx="12" cy="12" r="4"></circle></svg>
+<button aria-label="Pomodoro" class="text-white/70 hover:text-white transition-colors" data-page="pomodoro" onclick="showPage('pomodoro')" data-label="pomodoro">
+<span class="nav-icon"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="none" r="10" stroke="currentColor" stroke-width="2"></circle><circle cx="12" cy="12" r="4"></circle></svg></span>
+<span class="nav-label">Pomodoro</span>
 </button>
-<button aria-label="Habits" class="text-white/70 hover:text-white transition-colors" data-page="habits" onclick="showPage('habits')">
-<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+<button aria-label="Habits" class="text-white/70 hover:text-white transition-colors" data-page="habits" onclick="showPage('habits')" data-label="habits">
+<span class="nav-icon"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+<span class="nav-label">Habits</span>
 </button>
 </div>
 <div class="flex flex-col items-center gap-6 w-full mb-4">
-<button aria-label="Settings" class="text-white/70 hover:text-white transition-colors" data-page="settings" onclick="openSettings()">
-<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+<button aria-label="Settings" class="text-white/70 hover:text-white transition-colors" onclick="openSettings()" data-label="settings">
+<span class="nav-icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span>
+<span class="nav-label">Settings</span>
 </button>
 </div>
 </nav>
+</div>
 
 <div id="page-home" class="hidden flex-1 flex-col items-center justify-center bg-white px-4"></div>
 
@@ -587,6 +643,19 @@ window.closeUpdateModal = function(e) {
     document.getElementById('updateModal').style.display = 'none';
   }
 };
+
+/* Sidebar hover expand/collapse */
+var sidebarContainer = document.getElementById('sidebar-container');
+if (sidebarContainer) {
+  sidebarContainer.addEventListener('mouseenter', function() {
+    this.classList.remove('sidebar-collapsed');
+    this.classList.add('sidebar-expanded');
+  });
+  sidebarContainer.addEventListener('mouseleave', function() {
+    this.classList.remove('sidebar-expanded');
+    this.classList.add('sidebar-collapsed');
+  });
+}
 
 showPage('pomodoro');
 </script>
