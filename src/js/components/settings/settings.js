@@ -38,7 +38,6 @@ function selectPomoTheme(id) {
   }
   window.db.setSetting('pomoTheme', id);
   if (window.shaderSetTheme) window.shaderSetTheme(id);
-  if (window.updateRingColor) window.updateRingColor();
 }
 
 function applyCustomColors() {
@@ -56,7 +55,6 @@ function applyCustomColors() {
   window.db.setSetting('customColor2', c2);
   window.db.setSetting('customBgColor', bg);
   if (window.shaderSetColors) window.shaderSetColors(_customColors.c1, _customColors.c2, _customColors.bg);
-  if (window.updateRingColor) window.updateRingColor();
 }
 
 // sync color pickers with saved custom colors after shader loads

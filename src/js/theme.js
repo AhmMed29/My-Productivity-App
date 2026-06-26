@@ -13,8 +13,6 @@ function applyTheme() {
   var aside = document.getElementById('asideArea');
   if (aside) aside.style.backgroundColor = '#FFFFFF';
   document.querySelectorAll('#asideArea .grid > div').forEach(function(el) { el.style.backgroundColor = '#F5F6F8'; });
-  var ring = document.getElementById('progressRing');
-  if (ring) ring.style.stroke = '#3B82F6';
   var bg = document.getElementById('progressBg');
   if (bg) bg.style.stroke = '#F3F4F6';
 }

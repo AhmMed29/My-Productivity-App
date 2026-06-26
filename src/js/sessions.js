@@ -167,7 +167,7 @@ function onSessionStart() {
     startTime: Date.now(),
     accumulatedMs: 0,
     lastResumeTime: Date.now(),
-    taskName: '',
+    taskName: window.pomoSessionName || '',
     tagId: null,
     goalId: null,
     status: 'running'

@@ -125,6 +125,7 @@ showPage = function(name) {
   _origShowPage2(name);
   if (name === 'goals') renderGoals();
   if (name === 'tasks') renderTasks();
+  if (name === 'habits' && window.renderHabits) renderHabits();
 };
 
 showPage('pomodoro');

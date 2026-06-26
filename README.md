@@ -1,4 +1,8 @@
-# 🎉 My Productivity App
+<p align="center">
+  <img src="Jamrah-Icon.svg" alt="Jamrah" width="128"/>
+</p>
+
+<h1 align="center">Jamrah جَــمْــرَه</h1>
 
 An all-in-one **Electron** desktop app: Pomodoro timer, habits tracker, goals & tasks manager — with SQLite persistence, animated shader backgrounds, and an auto-update system.
 

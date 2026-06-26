@@ -148,17 +148,26 @@
 .gt-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .gt-name { flex: 1; font-size: 14px; font-weight: 500; color: #374151; }
 .gt-progress { font-size: 12px; font-weight: 600; flex-shrink: 0; }
-.gt-task { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; cursor: pointer; transition: background 0.12s; }
-.gt-task:hover { background: #EFF6FF; }
-.gt-task:hover .gt-task-add { opacity: 1; }
+.gt-task { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; transition: background 0.12s; }
+.gt-task:hover { background: #F3F4F6; }
 .gt-task-dot { width: 6px; height: 6px; border-radius: 50%; background: #D1D5DB; flex-shrink: 0; }
 .gt-task-name { flex: 1; font-size: 13px; color: #6B7280; }
-.gt-task-add { font-size: 16px; font-weight: 700; color: #3B82F6; opacity: 0; transition: opacity 0.12s; }
+.gt-label { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+.gt-label-added { color: #3b82f6; background: #eff6ff; }
+.gt-label-done { color: #16a34a; background: #f0fdf4; }
+.gt-label-add { color: #3b82f6; background: #eff6ff; cursor: pointer; transition: opacity 0.12s; }
+.gt-label-add:hover { opacity: 0.7; }
+.gt-task-add { display: none; }
 
 /* ── Timer circle, shader, and pomodoro page ── */
 .timer-circle-wrapper { position: relative; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s ease; }
 .timer-circle-wrapper:hover { transform: scale(1.03); }
 #pomoShaderCanvas { border-radius: 50%; }
 #timerText { color: #000; }
+.habit-toggle { width:22px; height:22px; border-radius:6px; margin:0 auto; cursor:pointer; transition:all 0.12s; display:inline-flex; align-items:center; justify-content:center; }
+.habit-toggle.checked { box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+.habit-toggle.checked:hover { opacity:0.8; }
+.habit-toggle.unchecked { border:2px solid; background:#fff; }
+.habit-toggle.unchecked:hover { opacity:0.7; }
 
 

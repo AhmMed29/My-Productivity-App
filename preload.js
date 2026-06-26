@@ -45,5 +45,11 @@ contextBridge.exposeInMainWorld('db', {
   getTasks: (goalId) => ipcRenderer.invoke('db:get-tasks', goalId),
   createTask: (task) => ipcRenderer.invoke('db:create-task', task),
   toggleTask: (id) => ipcRenderer.invoke('db:toggle-task', id),
-  deleteTask: (id) => ipcRenderer.invoke('db:delete-task', id)
+  deleteTask: (id) => ipcRenderer.invoke('db:delete-task', id),
+  getHabits: () => ipcRenderer.sendSync('db:get-habits'),
+  createHabit: (habit) => ipcRenderer.sendSync('db:create-habit', habit),
+  updateHabit: (id, data) => ipcRenderer.sendSync('db:update-habit', id, data),
+  deleteHabit: (id) => ipcRenderer.sendSync('db:delete-habit', id),
+  getHabitLogs: (habitId, startDate, endDate) => ipcRenderer.sendSync('db:get-habit-logs', habitId, startDate, endDate),
+  setHabitLog: (habitId, date, value) => ipcRenderer.sendSync('db:set-habit-log', habitId, date, value)
 })

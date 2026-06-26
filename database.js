@@ -90,6 +90,36 @@ const MIGRATIONS = [
     try { db.exec('ALTER TABLE sessions ADD COLUMN goalId TEXT'); } catch(e) {}
     try { db.exec('CREATE INDEX IF NOT EXISTS idx_sessions_taskId ON sessions(taskId)'); } catch(e) {}
     try { db.exec('CREATE INDEX IF NOT EXISTS idx_sessions_goalId ON sessions(goalId)'); } catch(e) {}
+  },
+  function v6(db) {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS habits (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        color TEXT NOT NULL DEFAULT '#3b82f6',
+        sortOrder INTEGER DEFAULT 0,
+        createdAt TEXT DEFAULT (datetime('now'))
+      );
+      CREATE TABLE IF NOT EXISTS habit_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        habitId TEXT NOT NULL,
+        date TEXT NOT NULL,
+        value INTEGER DEFAULT 1,
+        createdAt TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE,
+        UNIQUE(habitId, date)
+      );
+      CREATE INDEX IF NOT EXISTS idx_habit_logs_habitId ON habit_logs(habitId);
+      CREATE INDEX IF NOT EXISTS idx_habit_logs_date ON habit_logs(date);
+    `);
+  },
+  function v7(db) {
+    try { db.exec('ALTER TABLE habits ADD COLUMN sortOrder INTEGER DEFAULT 0'); } catch(e) {}
+  },
+  function v8(db) {
+    try { db.exec("ALTER TABLE habits ADD COLUMN durationType TEXT DEFAULT 'yearly'"); } catch(e) {}
+    try { db.exec('ALTER TABLE habits ADD COLUMN durationStart TEXT'); } catch(e) {}
+    try { db.exec('ALTER TABLE habits ADD COLUMN durationEnd TEXT'); } catch(e) {}
   }
 ];
 
@@ -435,6 +465,58 @@ function deleteTask(id) {
   } catch (e) { return false; }
 }
 
+function getHabits() {
+  try {
+    return db.prepare('SELECT * FROM habits ORDER BY createdAt ASC').all();
+  } catch (e) { console.error('[DB] getHabits error:', e); return []; }
+}
+
+function createHabit(habit) {
+  try {
+    db.prepare('INSERT INTO habits (id, name, color, createdAt, durationType, durationStart, durationEnd) VALUES (?, ?, ?, ?, ?, ?, ?)').run(
+      habit.id, habit.name, habit.color, new Date().toISOString(),
+      habit.durationType || 'yearly',
+      habit.durationStart || null,
+      habit.durationEnd || null
+    );
+    return true;
+  } catch (e) { console.error('[DB] createHabit error:', e); return false; }
+}
+
+function updateHabit(id, data) {
+  try {
+    db.prepare('UPDATE habits SET name = ?, color = ?, durationType = ?, durationStart = ?, durationEnd = ? WHERE id = ?').run(
+      data.name, data.color,
+      data.durationType || 'yearly',
+      data.durationStart || null,
+      data.durationEnd || null,
+      id
+    );
+    return true;
+  } catch (e) { return false; }
+}
+
+function deleteHabit(id) {
+  try {
+    db.prepare('DELETE FROM habit_logs WHERE habitId = ?').run(id);
+    db.prepare('DELETE FROM habits WHERE id = ?').run(id);
+    return true;
+  } catch (e) { return false; }
+}
+
+function getHabitLogs(habitId, startDate, endDate) {
+  try {
+    return db.prepare('SELECT * FROM habit_logs WHERE habitId = ? AND date >= ? AND date <= ? ORDER BY date ASC').all(habitId, startDate, endDate);
+  } catch (e) { console.error('[DB] getHabitLogs error:', e); return []; }
+}
+
+function setHabitLog(habitId, date, value) {
+  try {
+    db.prepare('INSERT OR REPLACE INTO habit_logs (habitId, date, value, createdAt) VALUES (?, ?, ?, ?)').run(habitId, date, value, new Date().toISOString());
+    return true;
+  } catch (e) { console.error('[DB] setHabitLog error:', e); return false; }
+}
+
 function saveGoalProgress(goalId, date, progressValue, focusMinutes) {
   try {
     db.prepare('INSERT OR REPLACE INTO goal_progress (goalId, date, progressValue, focusMinutes) VALUES (?, ?, ?, ?)').run(
@@ -452,5 +534,7 @@ module.exports = {
   migrateFromJson, setPath, getPath,
   getGoals, getGoal, createGoal, updateGoal, deleteGoal,
   getGoalProgress, saveGoalProgress,
-  getTasks, createTask, toggleTask, deleteTask
+  getTasks, createTask, toggleTask, deleteTask,
+  getHabits, createHabit, updateHabit, deleteHabit,
+  getHabitLogs, setHabitLog
 };

@@ -72,8 +72,9 @@ function toggleTask(id) {
 }
 
 function deleteTask(id) {
-  if (!confirm('Delete this task?')) return;
-  window.db.deleteTask(id).then(function() { renderTasks(); });
+  showConfirmModal('Delete Task', 'Are you sure you want to delete this task?', 'Delete', function() {
+    window.db.deleteTask(id).then(function() { renderTasks(); });
+  });
 }
 
 function openGoalsTaskPopup() {
@@ -83,7 +84,7 @@ function openGoalsTaskPopup() {
   tree.innerHTML = '<div class="text-center py-8 text-gray-400">Loading...</div>';
   Promise.all([window.db.getGoals(), window.db.getTasks()]).then(function(results) {
     var goals = results[0] || [];
-    var tasks = results[1] || [];
+    var allTasks = results[1] || [];
     var childMap = {};
     var taskMap = {};
     for (var ogi = 0; ogi < goals.length; ogi++) {
@@ -92,10 +93,10 @@ function openGoalsTaskPopup() {
         childMap[goals[ogi].parentGoalId].push(goals[ogi]);
       }
     }
-    for (var oti = 0; oti < tasks.length; oti++) {
-      if (tasks[oti].goalId) {
-        if (!taskMap[tasks[oti].goalId]) taskMap[tasks[oti].goalId] = [];
-        taskMap[tasks[oti].goalId].push(tasks[oti]);
+    for (var oti = 0; oti < allTasks.length; oti++) {
+      if (allTasks[oti].goalId) {
+        if (!taskMap[allTasks[oti].goalId]) taskMap[allTasks[oti].goalId] = [];
+        taskMap[allTasks[oti].goalId].push(allTasks[oti]);
       }
     }
     var pgCache = {};
@@ -107,30 +108,37 @@ function openGoalsTaskPopup() {
       var myTasks = taskMap[g.id] || [];
       var hasKids = kids.length > 0;
       var hasTasks = myTasks.length > 0;
-      var html = '<div class="gt-node" data-id="' + g.id + '">';
-      html += '<div class="gt-row" style="padding-left:' + (depth * 20 + 8) + 'px" onclick="event.stopPropagation();toggleGoalsTaskNode(\'' + g.id + '\')">';
+      var h = '<div class="gt-node" data-id="' + g.id + '">';
+      h += '<div class="gt-row" style="padding-left:' + (depth * 20 + 8) + 'px" onclick="event.stopPropagation();toggleGoalsTaskNode(\'' + g.id + '\')">';
       if (hasKids || hasTasks) {
-        html += '<span class="gt-chevron" id="gt-cv-' + g.id + '"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>';
+        h += '<span class="gt-chevron" id="gt-cv-' + g.id + '"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>';
       } else {
-        html += '<span class="gt-chevron gt-chevron-empty"></span>';
+        h += '<span class="gt-chevron gt-chevron-empty"></span>';
       }
-      html += '<span class="gt-dot" style="background:' + g.color + '"></span>';
-      html += '<span class="gt-name">' + esc(g.name) + '</span>';
-      html += '<span class="gt-progress" style="color:' + g.color + '">' + nodeProgress(g.id) + '%</span>';
-      html += '</div>';
-      html += '<div class="gt-children" id="gt-ch-' + g.id + '" style="display:none">';
+      h += '<span class="gt-dot" style="background:' + g.color + '"></span>';
+      h += '<span class="gt-name">' + esc(g.name) + '</span>';
+      h += '<span class="gt-progress" style="color:' + g.color + '">' + nodeProgress(g.id) + '%</span>';
+      h += '</div>';
+      h += '<div class="gt-children" id="gt-ch-' + g.id + '" style="display:none">';
       for (var oki = 0; oki < kids.length; oki++) {
-        html += renderNode(kids[oki], depth + 1);
+        h += renderNode(kids[oki], depth + 1);
       }
       for (var oti2 = 0; oti2 < myTasks.length; oti2++) {
-        html += '<div class="gt-task" data-task-name="' + esc(myTasks[oti2].name) + '" data-task-goal="' + g.id + '" onclick="event.stopPropagation();addTaskFromGoal(this.dataset.taskName, this.dataset.taskGoal)" style="padding-left:' + ((depth + 1) * 20 + 28) + 'px">';
-        html += '<span class="gt-task-dot"></span>';
-        html += '<span class="gt-task-name">' + esc(myTasks[oti2].name) + '</span>';
-        html += '<span class="gt-task-add">+</span>';
-        html += '</div>';
+        var t = myTasks[oti2];
+        var lbl = '';
+        if (t.completed) {
+          lbl = '<span class="gt-label gt-label-done">✔ Done</span>';
+        } else {
+          lbl = '<span class="gt-label gt-label-added">✔ Added</span>';
+        }
+        h += '<div class="gt-task" data-task-id="' + t.id + '" style="padding-left:' + ((depth + 1) * 20 + 28) + 'px">';
+        h += '<span class="gt-task-dot"></span>';
+        h += '<span class="gt-task-name">' + esc(t.name) + '</span>';
+        h += lbl;
+        h += '</div>';
       }
-      html += '</div></div>';
-      return html;
+      h += '</div></div>';
+      return h;
     }
     var html = '';
     for (var ogi2 = 0; ogi2 < goals.length; ogi2++) {
@@ -156,6 +164,6 @@ function toggleGoalsTaskNode(id) {
 function addTaskFromGoal(name, goalId) {
   var task = { id: 'task_' + Date.now(), name: name, goalId: goalId };
   window.db.createTask(task).then(function(result) {
-    if (result === true) { renderTasks(); }
+    if (result === true) { renderTasks(); openGoalsTaskPopup(); }
   });
 }

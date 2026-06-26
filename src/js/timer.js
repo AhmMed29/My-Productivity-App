@@ -1,4 +1,3 @@
-var DASHARRAY = 2 * Math.PI * 192;
 var SESSIONS_BEFORE_LONG_BREAK = 4;
 var PHASE_LABELS = { idle: '', work: 'Focus', shortBreak: 'Short Break', longBreak: 'Long Break' };
 
@@ -101,7 +100,6 @@ window.resetTimer = function() {
   phase = 'idle';
   setPhaseTime('work');
   sessionCount = 0;
-  updateRingColor();
   updateUI();
 };
 
@@ -126,17 +124,9 @@ function advancePhase() {
 
 function completeTimer() {
   if (window.shaderSetRunning) window.shaderSetRunning(false);
-  var ring = document.getElementById('progressRing');
-  if (ring) ring.setAttribute('stroke', '#3b82f6');
   advancePhase();
   recalcRemaining();
   updateUI();
-}
-
-function updateRingColor() {
-  var ring = document.getElementById('progressRing');
-  if (!ring) return;
-  ring.setAttribute('stroke', 'rgba(255,255,255,0.15)');
 }
 
 function nextPhase(current, count) {
@@ -148,7 +138,6 @@ function updateUI() {
   var text = document.getElementById('timerText');
   var label = document.getElementById('phaseLabel');
   var playBtn = document.getElementById('playBtn');
-  var ring = document.getElementById('progressRing');
 
   if (text) text.textContent = phase === 'idle' ? '' : formatTime(remainingSeconds);
   if (label) label.textContent = phase === 'idle' ? 'tap to start' : PHASE_LABELS[phase];
@@ -159,13 +148,13 @@ function updateUI() {
       : '<svg width="14" height="16" viewBox="0 0 12 16" fill="currentColor" style="margin-left:2px"><polygon points="0,0 12,8 0,16"/></svg>';
   }
 
-  if (ring) {
-    if (phase !== 'idle' && totalSeconds > 0) {
-      ring.style.strokeDashoffset = DASHARRAY * (1 - remainingSeconds / totalSeconds);
-    } else {
-      ring.style.strokeDashoffset = DASHARRAY;
-    }
-  }
+  var show = phase === 'idle' || !isRunning;
+  var ctrl = document.getElementById('pomoControls');
+  var pres = document.getElementById('pomoPresets');
+  var nmBox = document.getElementById('pomoNameBox');
+  if (ctrl) ctrl.style.display = show ? 'flex' : 'none';
+  if (pres) pres.style.display = show ? 'flex' : 'none';
+  if (nmBox) nmBox.style.display = show ? 'block' : 'none';
 
   updateSessionDots();
 }
@@ -200,7 +189,12 @@ window.openPomoSettings = function() {
 window.closePomoSettings = function(e) {
   if (e && e.target !== e.currentTarget) return;
   var sheet = document.getElementById('pomoSettings');
-  if (sheet) sheet.classList.add('hidden');
+  if (!sheet) return;
+  sheet.classList.add('closing');
+  setTimeout(function() {
+    sheet.classList.add('hidden');
+    sheet.classList.remove('closing');
+  }, 300);
 };
 
 window.savePomoSettings = function() {
@@ -214,8 +208,14 @@ window.savePomoSettings = function() {
   window.db.setSetting('shortBreakMinutes', sb);
   window.db.setSetting('longBreakMinutes', lb);
   if (phase === 'idle') setPhaseTime('work');
+  else if (!isRunning) { setPhaseTime(phase); updateUI(); }
   var sheet = document.getElementById('pomoSettings');
-  if (sheet) sheet.classList.add('hidden');
+  if (!sheet) return;
+  sheet.classList.add('closing');
+  setTimeout(function() {
+    sheet.classList.add('hidden');
+    sheet.classList.remove('closing');
+  }, 300);
 };
 
 window.stepSetting = function(id, delta) {
@@ -232,7 +232,7 @@ window.closeTimePopup = function() {};
 // Preset & time adjustment
 window.setPreset = function(minutes) {
   window.db.setSetting('workMinutes', minutes);
-  if (phase === 'idle') {
+  if (phase === 'idle' || (phase === 'work' && !isRunning)) {
     setPhaseTime('work');
     updateUI();
   }
@@ -262,12 +262,24 @@ window.cancelEnd = function() {
 window.closeEndPopup = window.cancelEnd;
 
 window.openEndPopup = function() {
-  if (!isRunning) return;
+  if (phase === 'idle') return;
   var popup = document.getElementById('endPopup');
   if (popup) popup.classList.remove('hidden');
 };
 
 // Init
+window.pomoSessionName = localStorage.getItem('pomoSessionName') || '';
+var nameInput = document.getElementById('pomoNameInput');
+if (nameInput) {
+  nameInput.value = window.pomoSessionName;
+  nameInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      window.pomoSessionName = this.value.trim();
+      localStorage.setItem('pomoSessionName', window.pomoSessionName);
+      this.blur();
+    }
+  });
+}
 setPhaseTime('work');
 updateUI();
 

@@ -246,3 +246,28 @@ ipcMain.handle('db:toggle-task', async (e, id) => {
 ipcMain.handle('db:delete-task', async (e, id) => {
   return database.deleteTask(id);
 });
+
+// ---- Habits IPC ----
+ipcMain.on('db:get-habits', (e) => {
+  e.returnValue = database.getHabits();
+});
+
+ipcMain.on('db:create-habit', (e, habit) => {
+  e.returnValue = database.createHabit(habit);
+});
+
+ipcMain.on('db:update-habit', (e, id, data) => {
+  e.returnValue = database.updateHabit(id, data);
+});
+
+ipcMain.on('db:delete-habit', (e, id) => {
+  e.returnValue = database.deleteHabit(id);
+});
+
+ipcMain.on('db:get-habit-logs', (e, habitId, startDate, endDate) => {
+  e.returnValue = database.getHabitLogs(habitId, startDate, endDate);
+});
+
+ipcMain.on('db:set-habit-log', (e, habitId, date, value) => {
+  e.returnValue = database.setHabitLog(habitId, date, value);
+});

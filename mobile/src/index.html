@@ -178,8 +178,13 @@
 
 <div id="updateModal" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.3);align-items:flex-end;justify-content:center;padding:16px;display:none" onclick="closeUpdateModal(event)">
   <div style="background:white;border-radius:16px;padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.15);position:relative" onclick="event.stopPropagation()">
-    <h3 style="font-size:20px;font-weight:600;margin-bottom:4px;color:#1F2937">Update Available</h3>
-    <p style="font-size:13px;color:#6B7280;margin-bottom:16px">New version: <span id="updateVersion" style="font-weight:600;color:#374151"></span></p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <img src="../src/assets/Jamrah-Icon.svg" alt="Jamrah" style="width:32px;height:32px"/>
+      <div>
+        <h3 style="font-size:20px;font-weight:600;color:#1F2937">Jamrah جَــمْــرَه</h3>
+        <p style="font-size:13px;color:#6B7280">New version: <span id="updateVersion" style="font-weight:600;color:#374151"></span></p>
+      </div>
+    </div>
     <label style="font-size:13px;color:#6B7280;margin-bottom:8px;display:block">Release Notes</label>
     <div id="updateReleaseNotes" style="font-size:13px;color:#4B5563;background:#F9FAFB;border-radius:12px;padding:12px;max-height:120px;overflow-y:auto;margin-bottom:20px;white-space:pre-line;line-height:1.5"></div>
     <div style="display:flex;justify-content:flex-end;gap:12px">

@@ -1,7 +1,7 @@
 {
-  "name": "my-productivity-app",
-  "version": "1.1.4",
-  "description": "My Productivity App - Pomodoro timer, habits tracker & more",
+  "name": "jamrah",
+  "version": "1.2.0",
+  "description": "Jamrah جَــمْــرَه — ember of productivity. Pomodoro timer, habits tracker & more",
   "main": "main.js",
   "author": "AhmMed29",
   "license": "ISC",

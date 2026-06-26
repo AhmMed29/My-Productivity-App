@@ -91,9 +91,13 @@ body {
   border-radius: 50%;
   width: 36px;
   height: 36px;
+  color: #000;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.12);
 }
 .pomo-btn:hover {
-  color: rgba(255,255,255,0.6) !important;
+  background: #f5f5f5;
+  color: #000 !important;
 }
 .pomo-btn:active {
   transform: scale(0.9);
@@ -102,9 +106,9 @@ body {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
+  color: #000;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -112,9 +116,9 @@ body {
   transition: all 0.15s;
 }
 .pomo-play-btn:hover {
-  color: #fff;
-  border-color: rgba(255,255,255,0.25);
-  background: rgba(255,255,255,0.1);
+  background: #f5f5f5;
+  border-color: rgba(0,0,0,0.18);
+  color: #000;
 }
 .pomo-play-btn:active {
   transform: scale(0.94);
@@ -198,37 +202,45 @@ body {
 
 /* ── Settings Sheet ── */
 #pomoSettings {
-  animation: fadeIn 0.2s ease;
-}
-#pomoSettings.hidden {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 #pomoSettings:not(.hidden) {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+}
+#pomoSettings.hidden {
+  display: flex !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none;
 }
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 .pomo-settings-sheet {
-  background: #0a0a0a;
-  border-top: 1px solid rgba(255,255,255,0.05);
+  background: #fff;
+  border: 2px solid #000;
+  border-bottom: none;
   border-radius: 16px 16px 0 0;
   padding: 24px;
   width: 100%;
   max-width: 520px;
   margin: 0 auto;
-  animation: slideUp 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(0);
 }
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+#pomoSettings.closing .pomo-settings-sheet,
+#pomoSettings.hidden .pomo-settings-sheet {
+  transform: translateY(100%);
 }
 .pomo-settings-title {
   font-family: 'Instrument Serif', serif;
   font-size: 26px;
   font-weight: 400;
-  color: rgba(255,255,255,0.8);
+  color: #111;
   margin-bottom: 24px;
   text-align: center;
 }
@@ -237,11 +249,11 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 12px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 .pomo-setting-label {
   font-size: 14px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(0,0,0,0.55);
   letter-spacing: 0.05em;
 }
 .pomo-setting-controls {
@@ -253,9 +265,9 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.03);
+  color: rgba(0,0,0,0.45);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -264,19 +276,22 @@ body {
   transition: all 0.15s;
 }
 .pomo-setting-btn:hover {
-  color: rgba(255,255,255,0.8);
-  background: rgba(255,255,255,0.05);
+  color: #000;
+  background: rgba(0,0,0,0.06);
+  border-color: rgba(0,0,0,0.2);
 }
 .pomo-setting-input {
   width: 48px;
   text-align: center;
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.9);
+  background: #f2f2f2;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  color: #000;
   font-family: 'Instrument Serif', serif;
   font-size: 20px;
   font-variant-numeric: tabular-nums;
   -moz-appearance: textfield;
+  padding: 2px 0;
 }
 .pomo-setting-input::-webkit-inner-spin-button,
 .pomo-setting-input::-webkit-outer-spin-button {
@@ -285,6 +300,7 @@ body {
 }
 .pomo-setting-input:focus {
   outline: none;
+  border-color: rgba(0,0,0,0.25);
 }
 .pomo-settings-save {
   width: 100%;
@@ -292,13 +308,13 @@ body {
   padding: 14px;
   border-radius: 999px;
   border: none;
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.8);
+  background: #000;
+  color: #fff;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
 }
 .pomo-settings-save:hover {
-  background: rgba(255,255,255,0.15);
+  background: #222;
 }
