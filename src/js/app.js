@@ -66,7 +66,7 @@ setInterval(updateClock, 1000);
 })();
 
 /* ── Update system ── */
-var APP_VERSION = '1.2.0';
+var APP_VERSION = '1.2.1';
 var updateData = null;
 
 function renderReleaseNotes(text) {
