@@ -16,7 +16,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openUrl: (url) => ipcRenderer.invoke('open-url', url),
   onUpdateAvailable: (callback) => {
     ipcRenderer.on('update-available', (_, data) => callback(data))
-  }
+  },
+  installUpdate: (url) => ipcRenderer.invoke('install-update', url)
 })
 
 contextBridge.exposeInMainWorld('db', {

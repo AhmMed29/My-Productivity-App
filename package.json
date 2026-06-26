@@ -12,8 +12,8 @@
     "dist": "electron-builder --win"
   },
   "build": {
-    "appId": "com.ahmmed.myproductivityapp",
-    "productName": "My Productivity App",
+    "appId": "com.ahmmed.jamrah",
+    "productName": "Jamrah",
     "directories": {
       "output": "dist"
     },

@@ -66,7 +66,7 @@ setInterval(updateClock, 1000);
 })();
 
 /* ── Update system ── */
-var APP_VERSION = '1.1.4';
+var APP_VERSION = '1.2.0';
 var updateData = null;
 
 function renderReleaseNotes(text) {
@@ -88,7 +88,9 @@ window.electronAPI.onUpdateAvailable(function(data) {
 
 window.downloadUpdate = function() {
   if (updateData && updateData.downloadUrl) {
-    window.electronAPI.openUrl(updateData.downloadUrl);
+    window.electronAPI.installUpdate(updateData.downloadUrl).catch(function(err) {
+      console.error('Update failed:', err);
+    });
   }
   document.getElementById('updateModal').style.display = 'none';
 };
@@ -97,6 +99,24 @@ window.closeUpdateModal = function(e) {
   if (!e || e.target === e.currentTarget) {
     document.getElementById('updateModal').style.display = 'none';
   }
+};
+
+/* ── Welcome popup (shown once after update) ── */
+(function() {
+  if (!localStorage.getItem('welcomeShown')) {
+    var notes = document.getElementById('welcomeReleaseNotes');
+    if (notes) {
+      notes.innerHTML = renderReleaseNotes(
+        '## ✨ Rebrand\n- New app name: **Jamrah** (جمرة) — ember of productivity\n- New icon (SVG)\n\n## 🎨 Improvements\n- Settings sheet now white theme with black borders\n- Removed progress ring from pomodoro timer\n- Smooth slide-up/down animation for settings sheet\n- Confirmation modals for delete habit, delete task, end session\n- Goal tasks with Added/Done labels\n- Session name input box\n- Pomodoro controls hide when timer running\n\n## 🐛 Bug Fixes\n- Fixed End button not working when timer paused\n- Fixed timer preset not updating when paused\n- Fixed progress ring position\n- Fixed dark text visibility in end popup'
+      );
+    }
+    document.getElementById('welcomeModal').style.display = 'flex';
+  }
+})();
+
+window.closeWelcomeModal = function() {
+  localStorage.setItem('welcomeShown', 'true');
+  document.getElementById('welcomeModal').style.display = 'none';
 };
 
 /* ── Settings Page ── */

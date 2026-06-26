@@ -1,6 +1,8 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const https = require('https')
+const { exec } = require('child_process')
 const database = require('./database')
 
 let win
@@ -169,6 +171,27 @@ ipcMain.on('db:get-total-stats', (e) => {
 
 ipcMain.on('db:get-path', (e) => {
   e.returnValue = database.getPath()
+})
+
+ipcMain.handle('install-update', async (e, url) => {
+  var installerPath = path.join(app.getPath('temp'), 'jamrah-setup.exe')
+  return new Promise(function(resolve, reject) {
+    var file = fs.createWriteStream(installerPath)
+    https.get(url, function(res) {
+      res.pipe(file)
+      file.on('finish', function() {
+        file.close(function() {
+          exec('"' + installerPath + '" /S', function(err) {
+            if (err) { reject(err); return }
+            app.quit()
+          })
+        })
+      })
+    }).on('error', function(err) {
+      fs.unlink(installerPath, function() {})
+      reject(err)
+    })
+  })
 })
 
 ipcMain.handle('open-url', async (e, url) => {
