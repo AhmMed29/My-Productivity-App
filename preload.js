@@ -17,7 +17,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onUpdateAvailable: (callback) => {
     ipcRenderer.on('update-available', (_, data) => callback(data))
   },
-  installUpdate: (url) => ipcRenderer.invoke('install-update', url)
+  installUpdate: (url) => ipcRenderer.invoke('install-update', url),
+  onUpdateProgress: (callback) => {
+    ipcRenderer.on('update-progress', (_, pct) => callback(pct))
+  }
 })
 
 contextBridge.exposeInMainWorld('db', {

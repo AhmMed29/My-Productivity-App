@@ -1,6 +1,6 @@
 {
   "name": "jamrah",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Jamrah جَــمْــرَه — ember of productivity. Pomodoro timer, habits tracker & more",
   "main": "main.js",
   "author": "AhmMed29",
@@ -25,7 +25,8 @@
       "src/**/*"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "jamrah-icon.png"
     },
     "nsis": {
       "oneClick": false,
@@ -37,7 +38,8 @@
   "devDependencies": {
     "@electron/rebuild": "^4.0.4",
     "electron": "^42.4.0",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "sharp": "^0.35.2"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1"

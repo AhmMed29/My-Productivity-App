@@ -66,7 +66,7 @@ setInterval(updateClock, 1000);
 })();
 
 /* ── Update system ── */
-var APP_VERSION = '1.2.1';
+var APP_VERSION = '1.2.2';
 var updateData = null;
 
 function renderReleaseNotes(text) {
@@ -87,13 +87,29 @@ window.electronAPI.onUpdateAvailable(function(data) {
 });
 
 window.downloadUpdate = function() {
-  if (updateData && updateData.downloadUrl) {
-    window.electronAPI.installUpdate(updateData.downloadUrl).catch(function(err) {
-      console.error('Update failed:', err);
-    });
-  }
-  document.getElementById('updateModal').style.display = 'none';
+  if (!updateData || !updateData.downloadUrl) return;
+  var wrap = document.getElementById('updateProgressWrap');
+  var bar = document.getElementById('updateProgressBar');
+  var status = document.getElementById('updateStatus');
+  var btn = document.querySelector('#updateModal .flex.justify-end button:last-child');
+  if (wrap) wrap.style.display = 'block';
+  if (status) { status.style.display = 'block'; status.textContent = 'Starting download...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Downloading...'; }
+  window.electronAPI.installUpdate(updateData.downloadUrl).then(function() {
+    if (status) status.textContent = 'Installing...';
+  }).catch(function(err) {
+    console.error('Update failed:', err);
+    if (status) status.textContent = 'Update failed. Please try again.';
+    if (btn) { btn.disabled = false; btn.textContent = 'Retry'; }
+  });
 };
+
+window.electronAPI.onUpdateProgress(function(pct) {
+  var bar = document.getElementById('updateProgressBar');
+  var status = document.getElementById('updateStatus');
+  if (bar) bar.style.width = pct + '%';
+  if (status) status.textContent = pct < 100 ? 'Downloading... ' + pct + '%' : 'Download complete! Installing...';
+});
 
 window.closeUpdateModal = function(e) {
   if (!e || e.target === e.currentTarget) {

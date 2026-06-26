@@ -186,10 +186,19 @@ ipcMain.handle('install-update', async (e, url) => {
           reject(new Error('HTTP ' + res.statusCode))
           return
         }
+        var total = parseInt(res.headers['content-length'] || 0)
+        var downloaded = 0
         var file = fs.createWriteStream(installerPath)
+        res.on('data', function(chunk) {
+          downloaded += chunk.length
+          if (total && win) {
+            win.webContents.send('update-progress', Math.round(downloaded / total * 100))
+          }
+        })
         res.pipe(file)
         file.on('finish', function() {
           file.close(function() {
+            if (win) win.webContents.send('update-progress', 100)
             exec('"' + installerPath + '" /S', function(err) {
               if (err) { reject(err); return }
               app.quit()
