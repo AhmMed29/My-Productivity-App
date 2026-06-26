@@ -31,9 +31,9 @@ function createWindow () {
       preload: path.join(__dirname, 'preload.js')
     }
   })
-  win.loadFile('src/index.html')
-
-  checkForUpdates()
+  win.loadFile('src/index.html').then(function() {
+    checkForUpdates()
+  })
 }
 
 function versionGt(a, b) {
@@ -49,9 +49,10 @@ function versionGt(a, b) {
 function checkForUpdates() {
   var url = 'https://raw.githubusercontent.com/AhmMed29/My-Productivity-App/main/update.json'
   var http = url.startsWith('https') ? require('https') : require('http')
-  http.get(url, { timeout: 10000 }, function(res) {
+  var req = http.get(url, { timeout: 10000 }, function(res) {
     var body = ''
     res.on('data', function(c) { body += c })
+    res.on('error', function(e) { console.error('[Update] response error:', e.message) })
     res.on('end', function() {
       try {
         var data = JSON.parse(body)
@@ -62,12 +63,9 @@ function checkForUpdates() {
         console.error('[Update] parse error:', e)
       }
     })
-  }).on('error', function(e) {
-    console.error('[Update] network error:', e.message)
-  }).on('timeout', function() {
-    console.error('[Update] timeout')
-    this.destroy()
   })
+  req.on('error', function(e) { console.error('[Update] network error:', e.message) })
+  req.on('timeout', function() { console.error('[Update] timeout'); req.destroy() })
 }
 
 app.whenReady().then(() => {
