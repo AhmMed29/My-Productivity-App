@@ -66,13 +66,23 @@ setInterval(updateClock, 1000);
 })();
 
 /* ── Update system ── */
-var APP_VERSION = '1.1.2';
+var APP_VERSION = '1.1.3';
 var updateData = null;
+
+function renderReleaseNotes(text) {
+  if (!text) return '';
+  return text
+    .replace(/^### (.+)$/gm, '<div style="font-size:14px;font-weight:600;color:#374151;margin-top:12px;margin-bottom:6px">$1</div>')
+    .replace(/^## (.+)$/gm, '<div style="font-size:15px;font-weight:700;color:#1F2937;margin-top:14px;margin-bottom:8px">$1</div>')
+    .replace(/^# (.+)$/gm, '<div style="font-size:16px;font-weight:700;color:#111827;margin-top:16px;margin-bottom:8px">$1</div>')
+    .replace(/^- (.+)$/gm, '<div style="display:flex;align-items:baseline;gap:8px;padding:2px 0"><span style="color:#3B82F6;flex-shrink:0">•</span><span>$1</span></div>')
+    .replace(/\n/g, '<br>');
+}
 
 window.electronAPI.onUpdateAvailable(function(data) {
   updateData = data;
   document.getElementById('updateVersion').textContent = data.version;
-  document.getElementById('updateReleaseNotes').textContent = data.releaseNotes || '';
+  document.getElementById('updateReleaseNotes').innerHTML = renderReleaseNotes(data.releaseNotes);
   document.getElementById('updateModal').style.display = 'flex';
 });
 
