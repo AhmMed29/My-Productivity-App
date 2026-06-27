@@ -76,3 +76,23 @@ function applyCustomColors() {
 
 if (typeof(window.shaderThemes) !== 'undefined') buildThemeCards();
 if (_pomoTheme !== 'custom') selectPomoTheme(_pomoTheme);
+
+window.togglePomoSound = function() {
+  var toggle = document.getElementById('pomoSoundToggle');
+  if (!toggle) return;
+  var currentlyOn = toggle.classList.contains('active');
+  if (currentlyOn) {
+    toggle.classList.remove('active');
+    window.db.setSetting('playPomoSound', 'false');
+  } else {
+    toggle.classList.add('active');
+    window.db.setSetting('playPomoSound', 'true');
+  }
+};
+
+(function() {
+  var toggle = document.getElementById('pomoSoundToggle');
+  if (toggle && window.db.getSetting('playPomoSound') === 'false') {
+    toggle.classList.remove('active');
+  }
+})();

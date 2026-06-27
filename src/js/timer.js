@@ -81,6 +81,7 @@ window.toggleTimer = function() {
     setPhaseTime('work');
     startTimer();
     if (window.shaderSetRunning) window.shaderSetRunning(true);
+    if (window.AudioManager) window.AudioManager.playSound('pomo-start.mp3');
   } else {
     if (isRunning) {
       stopTimer();
@@ -89,6 +90,7 @@ window.toggleTimer = function() {
     } else {
       startTimer();
       if (window.shaderSetRunning) window.shaderSetRunning(true);
+      if (window.AudioManager) window.AudioManager.playSound('pomo-start.mp3');
     }
   }
   updateUI();
@@ -127,6 +129,7 @@ function completeTimer() {
   advancePhase();
   recalcRemaining();
   updateUI();
+  if (window.AudioManager) window.AudioManager.playSound('pomo-end.mp3');
 }
 
 function nextPhase(current, count) {
@@ -253,6 +256,7 @@ window.confirmEnd = function() {
   advancePhase();
   recalcRemaining();
   updateUI();
+  if (window.AudioManager) window.AudioManager.playSound('pomo-end.mp3');
 };
 
 window.cancelEnd = function() {

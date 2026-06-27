@@ -176,6 +176,12 @@ window.tailwind={ config: {
         <button class="pomo-setting-btn" onclick="window.stepSetting('settingLongBreak',1)">+</button>
       </div>
     </div>
+    <div class="pomo-setting-row">
+      <span class="pomo-setting-label">Sound</span>
+      <div class="toggle-switch active" id="pomoSoundToggle" onclick="togglePomoSound()">
+        <div class="toggle-knob"></div>
+      </div>
+    </div>
     <button class="pomo-settings-save" onclick="window.savePomoSettings()">Save</button>
   </div>
 </div>
@@ -634,6 +640,7 @@ window.tailwind={ config: {
 <script src="js/storage.js"></script>
 <script src="js/stats.js"></script>
 <script src="js/shader.js"></script>
+<script src="js/utils/audio.js"></script>
 <script src="js/timer.js"></script>
 <script src="js/sessions.js"></script>
 <script src="js/theme.js"></script>
