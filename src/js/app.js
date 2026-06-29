@@ -1,6 +1,15 @@
 /* ── Page Router ── */
-function showPage(name) {
-  var pages = ['home', 'pomodoro', 'habits', 'goals', 'tasks', 'settings'];
+var _pendingNav = null;
+
+async function showPage(name) {
+  var settingsModal = document.getElementById('settingsModal');
+  if (settingsModal && settingsModal.style.display === 'flex' && window.settingsDirty) {
+    _pendingNav = name;
+    document.getElementById('settingsConfirmModal').style.display = 'flex';
+    return;
+  }
+  if (settingsModal) settingsModal.style.display = 'none';
+  var pages = ['home', 'pomodoro', 'habits', 'goals', 'tasks'];
   pages.forEach(function(p) {
     var el = document.getElementById('page-' + p);
     if (el) {
@@ -8,26 +17,49 @@ function showPage(name) {
     }
   });
   if (name === 'pomodoro' && window.initPomoShader) {
-    window.initPomoShader();
+    await window.initPomoShader();
   } else if (name !== 'pomodoro' && window.destroyPomoShader) {
     window.destroyPomoShader();
   }
-  var buttons = document.querySelectorAll('#navSidebar button[data-page]');
+  var buttons = document.querySelectorAll('#navDock .dock-item');
   buttons.forEach(function(btn) {
-    btn.classList.remove('text-white', 'relative');
-    btn.classList.add('text-white/70', 'hover:text-white');
-    var indicator = btn.querySelector('.sidebar-active');
-    if (indicator) indicator.remove();
+    btn.classList.remove('active');
+    var dot = btn.querySelector('.dock-active-dot');
+    if (dot) dot.remove();
   });
-  var active = document.querySelector('#navSidebar button[data-page="' + name + '"]');
+  var active = document.querySelector('#navDock .dock-item[data-page="' + name + '"]');
   if (active) {
-    active.classList.remove('text-white/70', 'hover:text-white');
-    active.classList.add('text-white', 'relative');
+    active.classList.add('active', 'relative');
     var div = document.createElement('div');
-    div.className = 'sidebar-active absolute -left-3 top-1/2 -translate-y-1/2 w-1 h-5 bg-white rounded-r';
+    div.className = 'dock-active-dot';
     active.appendChild(div);
   }
 }
+
+window.confirmSettingsSave = function() {
+  window.saveSettings();
+  document.getElementById('settingsConfirmModal').style.display = 'none';
+  document.getElementById('settingsModal').style.display = 'none';
+  var target = _pendingNav;
+  _pendingNav = null;
+  if (target) showPage(target);
+};
+
+window.confirmSettingsDiscard = function() {
+  window.cancelSettings();
+  document.getElementById('settingsConfirmModal').style.display = 'none';
+  document.getElementById('settingsModal').style.display = 'none';
+  var target = _pendingNav;
+  _pendingNav = null;
+  if (target) showPage(target);
+};
+
+window.closeSettingsConfirm = function(e) {
+  if (!e || e.target === e.currentTarget) {
+    document.getElementById('settingsConfirmModal').style.display = 'none';
+    _pendingNav = null;
+  }
+};
 
 /* ── Keyboard Shortcuts ── */
 document.addEventListener('keydown', function(e) {
@@ -51,37 +83,6 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
-/* ── Sidebar Hover ── */
-(function() {
-  var sidebarContainer = document.getElementById('sidebar-container');
-  if (!sidebarContainer) return;
-  sidebarContainer.addEventListener('mouseenter', function() {
-    this.classList.remove('sidebar-collapsed');
-    this.classList.add('sidebar-expanded');
-  });
-  sidebarContainer.addEventListener('mouseleave', function() {
-    this.classList.remove('sidebar-expanded');
-    this.classList.add('sidebar-collapsed');
-  });
-})();
-
-/* ── Old Data Restore ── */
-window.electronAPI.onOldDataFound(function(data) {
-  document.getElementById('restoreModal').style.display = 'flex';
-});
-
-window.restoreOldData = function() {
-  window.electronAPI.restoreOldData().then(function() {
-    document.getElementById('restoreModal').style.display = 'none';
-  });
-};
-
-window.skipOldData = function() {
-  window.electronAPI.skipOldData().then(function() {
-    document.getElementById('restoreModal').style.display = 'none';
-  });
-};
-
 /* ── Update system (electron-updater) ── */
 var APP_VERSION = '1.2.2';
 var updateData = null;
@@ -101,6 +102,14 @@ window.electronAPI.onUpdateAvailable(function(data) {
   updateData = data;
   updateDownloaded = false;
   document.getElementById('updateVersion').textContent = data.version;
+  // Show update size (bytes → KB/MB)
+  var sizeEl = document.getElementById('updateSize');
+  if (sizeEl && data.files && data.files.length > 0) {
+    var bytes = data.files[0].size;
+    if (bytes) {
+      sizeEl.textContent = bytes > 1048576 ? ' (' + (bytes / 1048576).toFixed(1) + ' MB)' : ' (' + (bytes / 1024).toFixed(1) + ' KB)';
+    }
+  }
   var notes = data.releaseNotes || data.releaseNotes;
   document.getElementById('updateReleaseNotes').innerHTML = renderReleaseNotes(typeof notes === 'string' ? notes : '');
   var btn = document.querySelector('#updateModal .flex.justify-end button:last-child');
@@ -150,22 +159,36 @@ window.closeUpdateModal = function(e) {
   }
 };
 
-/* ── Welcome popup (shown once after update) ── */
-(function() {
-  if (!localStorage.getItem('welcomeShown')) {
-    var notes = document.getElementById('welcomeReleaseNotes');
-    if (notes) {
-      notes.innerHTML = renderReleaseNotes(
-        '## ✨ Rebrand\n- New app name: **Jamrah** (جمرة) — ember of productivity\n- New icon (SVG)\n\n## 🎨 Improvements\n- Settings sheet now white theme with black borders\n- Removed progress ring from pomodoro timer\n- Smooth slide-up/down animation for settings sheet\n- Confirmation modals for delete habit, delete task, end session\n- Goal tasks with Added/Done labels\n- Session name input box\n- Pomodoro controls hide when timer running\n\n## 🐛 Bug Fixes\n- Fixed End button not working when timer paused\n- Fixed timer preset not updating when paused\n- Fixed progress ring position\n- Fixed dark text visibility in end popup'
-      );
-    }
-    document.getElementById('welcomeModal').style.display = 'flex';
-  }
+/* ── Welcome popup (shown once, first launch only) ── */
+(async function checkWelcome() {
+  var shown = await window.db.getSetting('welcomeShown');
+  // if (shown === 'true') return; // temporarily disabled for review
+  var modal = document.getElementById('welcomeModal');
+  if (modal) modal.style.display = 'flex';
 })();
 
-window.closeWelcomeModal = function() {
-  localStorage.setItem('welcomeShown', 'true');
+window.closeWelcomeModal = async function() {
+  await window.db.setSetting('welcomeShown', 'true');
   document.getElementById('welcomeModal').style.display = 'none';
+};
+
+/* ── Manual update check (from settings) ── */
+window.checkForUpdates = function() {
+  var btn = document.getElementById('checkUpdateBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Checking...'; }
+  var statusEl = document.getElementById('updateStatus');
+  if (statusEl) { statusEl.style.display = 'block'; statusEl.textContent = 'Checking for updates...'; }
+  window.electronAPI.checkForUpdates().then(function(available) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Search for Updates'; }
+    if (available) {
+      // update-available event will fire automatically
+    } else {
+      if (statusEl) statusEl.textContent = 'You are up to date.';
+      setTimeout(function() {
+        if (statusEl) statusEl.style.display = 'none';
+      }, 3000);
+    }
+  });
 };
 
 /* ── Settings Page ── */
@@ -175,29 +198,27 @@ function selectStoragePath() {
       window.db.setPath(newPath).then(function(result) {
         if (result) {
           document.getElementById('storagePathDisplay').textContent = result;
+          if (window.markDirty) window.markDirty();
         }
       });
     }
   });
 }
-function cancelSettings() { showPage('pomodoro'); }
-function saveSettings() { showPage('pomodoro'); }
-
-(function() {
+(async function() {
   var pathEl = document.getElementById('storagePathDisplay');
   if (pathEl) {
-    var p = window.db.getSetting('storagePath');
-    pathEl.textContent = p || window.db.getSetting('defaultStoragePath') || 'Default';
+    var p = await window.db.getSetting('storagePath');
+    pathEl.textContent = p || await window.db.getSetting('defaultStoragePath') || 'Default';
   }
 })();
 
 /* ── Page change hook: render goals/tasks when page becomes visible ── */
 var _origShowPage2 = showPage;
-showPage = function(name) {
-  _origShowPage2(name);
+showPage = async function(name) {
+  await _origShowPage2(name);
   if (name === 'goals') renderGoals();
   if (name === 'tasks') renderTasks();
   if (name === 'habits' && window.renderHabits) renderHabits();
 };
 
-showPage('pomodoro');
+(async function() { await showPage('pomodoro'); })();

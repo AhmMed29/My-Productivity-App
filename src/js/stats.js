@@ -1,8 +1,8 @@
-window.initStats = function () {};
+window.initStats = function () { return Promise.resolve() };
 
-window.getStats = function () {
-  var todayStats = window.db.getTodayStats();
-  var totalStats = window.db.getTotalStats();
+window.getStats = async function () {
+  var todayStats = await window.db.getTodayStats();
+  var totalStats = await window.db.getTotalStats();
   return {
     todayPomos: todayStats.todayPomos,
     todayFocusMinutes: todayStats.todayFocusMinutes,
@@ -11,8 +11,8 @@ window.getStats = function () {
   };
 };
 
-window.updateSidebar = function () {
-  var stats = window.getStats();
+window.updateSidebar = async function () {
+  var stats = await window.getStats();
   var el = function(id) { return document.getElementById(id); };
   if (el('todayPomosValue')) el('todayPomosValue').textContent = stats.todayPomos;
   if (el('todayDurationValue')) el('todayDurationValue').textContent = stats.todayFocusMinutes.toFixed(1);

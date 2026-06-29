@@ -1,30 +1,35 @@
 <p align="center">
-  <img src="Jamrah-Icon.svg" alt="Jamrah" width="128"/>
+  <img src="src/assets/Jamrah-Icon.svg" alt="Jamrah" width="128"/>
 </p>
 
 <h1 align="center">Jamrah جَــمْــرَه</h1>
 
-An all-in-one **Electron** desktop app: Pomodoro timer, habits tracker, goals & tasks manager — with SQLite persistence, animated shader backgrounds, and an auto-update system.
+<p align="center"><i>ember of productivity</i></p>
+
+An all-in-one **Electron** desktop app: Pomodoro timer with live GLSL shader backgrounds (5 themes + custom + Minimal), habits tracker, goals & tasks manager — powered by SQLite with an auto-update system.
 
 ---
 
 ## ✨ Features
 
-- **🍅 Pomodoro Timer** — Focus/break cycles with a live GLSL shader background (5 themes + custom colors), session timeline, and progress ring
-- **📊 Habits Tracker** — Arabic/English daily habits table with completion %, streaks, and stats popup
-- **🎯 Goals** — Create goals with sub-goals, track time-based progress, link pomodoros and tasks to each goal
-- **✅ Tasks** — Simple todo list per goal; toggle, delete, and quick-add from the goals hierarchy tree
+- **🍅 Pomodoro Timer** — Focus/break/long-break cycles with animated shader backgrounds (Ocean, Forest, Sunset, Lavender, Dark, Custom, or Minimal text-only mode), session timeline, sound cues
+- **📊 Habits Tracker** — Daily habits table with completion %, streaks, and stats popup
+- **🎯 Goals** — Create goals with sub-goals, link pomodoros and tasks, track time-based progress
+- **✅ Tasks** — Todo list per goal; toggle, delete, quick-add from goals hierarchy
 - **🏷️ Tags & Sessions** — Tag every session, filter timeline, edit past sessions
-- **🎨 Shader Themes** — Dark, Ocean, Forest, Sunset, Lavender, or custom colors — all with dark backgrounds for vibrant visuals
-- **🔄 Auto-Update** — Checks GitHub for new releases on launch; one-click download
+- **🎨 Shader Themes** — 5 animated GLSL themes + custom color pickers + new **Minimal** (text-only) mode
+- **⚙️ Tabbed Settings** — General / Pomodoro / Storage with timer durations, sound toggle, theme grid, storage path
+- **🔄 Auto-Update** — Checks GitHub Releases on launch; shows size, progress bar, and manual **Search for Updates** button in Settings
+- **👋 First-Run Welcome** — One-time popup with Buy Me a Coffee + GitHub contribute links
+- **🗄️ SQLite Persistence** — All data stored locally with automatic JSON migration
 
 ---
 
 ## 🚀 Getting Started
 
 ```bash
-git clone https://github.com/AhmMed29/My-Productivity-App.git
-cd My-Productivity-App
+git clone https://github.com/AhmMed29/jamrah.git
+cd jamrah
 npm install
 npm start
 ```
@@ -37,31 +42,31 @@ Requires **Node.js 22+** and **npm**.
 
 ```
 src/
-├── index.html               # Main HTML (no inline scripts)
+├── index.html                 # Main HTML (settings modal, popups, dock)
 ├── css/
-│   ├── pomodoro.css          # Timer/settings styles
-│   ├── home.css              # Home page styles
-│   ├── habits.css            # Habits table styles
-│   ├── ahmeds-styles.css     # Custom styles
-│   └── main.css              # Extracted shared styles
+│   ├── pomodoro.css           # Timer, settings modal, minimal theme
+│   ├── home.css               # Home page styles
+│   ├── habits.css             # Habits table styles
+│   ├── ahmeds-styles.css      # Custom toggle-switch, modal styles
+│   └── main.css               # Dock, floating-menu, extracted shared styles
 ├── js/
-│   ├── app.js                # Page router, clock, shortcuts, updates
-│   ├── storage.js            # DB path init
-│   ├── stats.js              # Today/total stats helpers
-│   ├── shader.js             # GLSL shader canvas init + themes
-│   ├── timer.js              # Pomodoro timer logic + controls
-│   ├── sessions.js           # Session CRUD, timeline, tags, popups
-│   ├── theme.js              # Theme selection + sidebar
+│   ├── app.js                 # Page router, clock, updates, welcome popup
+│   ├── storage.js             # DB path init
+│   ├── stats.js               # Today/total stats helpers
+│   ├── shader.js              # GLSL shader engine + 5 themes + hexToRgb
+│   ├── timer.js               # Pomodoro logic, phases, presets, reset
+│   ├── sessions.js            # Session CRUD, timeline, tags, popups
+│   ├── theme.js               # openSettings, closeSettings, page navigation
 │   ├── utils/
-│   │   └── helpers.js        # GOAL_COLORS, hexToRgb, esc
+│   │   └── helpers.js         # GOAL_COLORS, hexToRgb, esc
 │   └── components/
-│       ├── settings/         # Theme cards, color pickers
-│       ├── goals/            # Goals CRUD, detail modal, hierarchy
-│       ├── tasks/            # Tasks CRUD, goals-tree popup
-│       └── habits/           # Habits table, stats modal, add modal
-├── main.js                   # Electron main process + SQLite IPC
-├── preload.js                # Context bridge (electronAPI + db)
-├── database.js               # SQLite schema, migrations, queries
+│       ├── settings/settings.js   # Tab switching, theme cards, custom colors, save/cancel
+│       ├── goals/              # Goals CRUD, detail modal, hierarchy
+│       ├── tasks/              # Tasks CRUD, goals-tree popup
+│       └── habits/             # Habits table, stats modal, add modal
+├── main.js                    # Electron main process + SQLite IPC + auto-updater
+├── preload.js                 # Context bridge (electronAPI + db API)
+├── database.js                # SQLite schema, migrations, queries
 └── package.json
 ```
 
@@ -69,19 +74,19 @@ src/
 
 ## 🗄️ Data
 
-All data is stored locally via **SQLite** (better-sqlite3). Default location:
+All data stored locally via **SQLite** (better-sqlite3). Default location:
 
 ```
-Windows: %APPDATA%/My-Productivity-App/data/
+Windows: %APPDATA%/Jamrah/data/
 ```
 
-You can change the storage path in Settings → مكان الحفظ.
+You can change the storage path in Settings → Storage tab.
 
 ### Schema (v5)
 
 | Table | Purpose |
 |-------|---------|
-| `settings` | Key-value pairs (theme, durations, paths) |
+| `settings` | Key-value pairs (theme, durations, paths, welcomeShown) |
 | `sessions` | Pomodoro sessions with tags, tasks, goals |
 | `tags` | Colored labels for sessions |
 | `goals` | Goals with dates, colors, parent-child hierarchy |
@@ -102,10 +107,17 @@ Output in `dist/` — NSIS installer.
 
 ## 🔄 Update System
 
-On launch, the app checks:
-`https://raw.githubusercontent.com/AhmMed29/My-Productivity-App/main/update.json`
+Uses **electron-updater** with GitHub Releases as the provider. Configuration:
 
-If a newer version is found, a popup shows release notes + download button.
+```json
+"publish": { "provider": "github", "owner": "AhmMed29", "repo": "jamrah" }
+```
+
+- On launch: `autoUpdater.checkForUpdates()` checks for new releases
+- When available: modal shows version, size (KB/MB), release notes, download button
+- Download progress: animated progress bar + percentage
+- Manual check: **Search for Updates** button in Settings → General → Updates
+- **Code signing recommended** to avoid Windows SmartScreen warnings
 
 ---
 
@@ -113,6 +125,7 @@ If a newer version is found, a popup shows release notes + download button.
 
 - **Electron** 42 — desktop shell
 - **better-sqlite3** — local database
-- **Tailwind CSS** (CDN) — styling
-- **GLSL** — animated shader backgrounds
-- **Font Awesome** — icons
+- **electron-updater** — auto-update via GitHub Releases
+- **Tailwind CSS** (CDN) — utility-first styling
+- **GLSL** — real-time WebGL shader backgrounds
+- **Font Awesome** / **Material Symbols** — icons

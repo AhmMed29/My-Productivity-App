@@ -8,22 +8,22 @@ var addSessionTagId = null;
 var addSessionGoalId = null;
 var selectedTagColor = '#3B82F6';
 
-function getTags() {
-  try { return window.db.getTags() || []; } catch(e) { return []; }
+async function getTags() {
+  try { return await window.db.getTags() || []; } catch(e) { return []; }
 }
 
-function getTagsWithGoals() {
-  try { return window.db.getTagsWithGoals() || { tags: [], goals: [] }; } catch(e) { return { tags: [], goals: [] }; }
+async function getTagsWithGoals() {
+  try { return await window.db.getTagsWithGoals() || { tags: [], goals: [] }; } catch(e) { return { tags: [], goals: [] }; }
 }
 
-function saveTags(tags) {
+async function saveTags(tags) {
   for (var i = 0; i < tags.length; i++) {
-    window.db.saveTag(tags[i]);
+    await window.db.saveTag(tags[i]);
   }
 }
 
-function getSessions() {
-  try { return window.db.getSessionsGrouped() || {}; } catch(e) { return {}; }
+async function getSessions() {
+  try { return await window.db.getSessionsGrouped() || {}; } catch(e) { return {}; }
 }
 
 function todayKey() {
@@ -46,10 +46,10 @@ function hexToRgb(hex) {
   return r + ',' + g + ',' + b;
 }
 
-function renderTimeline() {
+async function renderTimeline() {
   var container = document.getElementById('focusTimeline');
   if (!container) return;
-  var sessions = getSessions();
+  var sessions = await getSessions();
   var html = '<div class="absolute left-4 top-2 bottom-0 w-px bg-gray-100"></div>';
 
   var activeSessionHtml = '';
@@ -64,7 +64,7 @@ function renderTimeline() {
     var durationText = totalFocusMin < 1 ? (Math.round(totalFocusMin * 60) + 's') : totalFocusMin.toFixed(1) + 'm';
     var tagHtml = '';
     if (activeSession.tagId) {
-      var allTags = getTags();
+      var allTags = await getTags();
       var tag = allTags.find(function(t) { return t.id === activeSession.tagId; });
       if (tag) {
         tagHtml = '<span class="tag-bubble" style="background:' + 'rgba(' + hexToRgb(tag.color) + ',0.12);color:' + tag.color + ';border:1px solid rgba(' + hexToRgb(tag.color) + ',0.25)">#' + tag.name + '</span>';
@@ -111,7 +111,7 @@ function renderTimeline() {
       var durText = durMin < 1 ? (Math.round(durMin * 60) + 's') : (durMin < 10 ? durMin.toFixed(1) : Math.round(durMin)) + 'm';
       var tagHtml2 = '';
       if (e.tagId) {
-        var allTags2 = getTags();
+        var allTags2 = await getTags();
         var tag2 = allTags2.find(function(t) { return t.id === e.tagId; });
         if (tag2) {
           tagHtml2 = '<span class="tag-bubble" style="background:' + tag2.color + '20;color:' + tag2.color + ';border:1px solid ' + tag2.color + '40">#' + tag2.name + '</span>';
@@ -193,7 +193,7 @@ function onSessionResume() {
   renderSessionTimeline();
 }
 
-function onSessionComplete(focusMinutes, plannedMinutes) {
+async function onSessionComplete(focusMinutes, plannedMinutes) {
   if (!activeSession) return;
   if (activeSession.lastResumeTime) {
     activeSession.accumulatedMs += Date.now() - activeSession.lastResumeTime;
@@ -213,10 +213,10 @@ function onSessionComplete(focusMinutes, plannedMinutes) {
     tagId: activeSession.tagId || null,
     goalId: activeSession.goalId || null
   };
-  window.db.saveSession(session);
+  await window.db.saveSession(session);
   activeSession = null;
-  renderTimeline();
-  renderSessionTimeline();
+  await renderTimeline();
+  await renderSessionTimeline();
 }
 
 function onSessionCancel() {
@@ -240,20 +240,20 @@ document.addEventListener('click', function(e) {
 
 // Patch timer functions to hook into session tracking
 var _origToggleTimer = window.toggleTimer;
-window.toggleTimer = function() {
+window.toggleTimer = async function() {
   if (remainingSeconds <= 0) { window.openTimePopup(); return; }
   if (isRunning) {
-    _origToggleTimer();
+    await _origToggleTimer();
     onSessionPause();
   } else {
     var isFresh = remainingSeconds === totalSeconds;
-    _origToggleTimer();
+    await _origToggleTimer();
     if (isFresh) onSessionStart(); else onSessionResume();
   }
 };
 
 var _origCompleteTimer = completeTimer;
-completeTimer = function() {
+completeTimer = async function() {
   var sp = document.getElementById('sessionPopup');
   if (sp) sp.classList.add('hidden');
   var td = document.getElementById('tagDropdown');
@@ -264,12 +264,12 @@ completeTimer = function() {
     activeSession.accumulatedMs += Date.now() - activeSession.lastResumeTime;
     activeSession.lastResumeTime = null;
   }
-  _origCompleteTimer();
-  onSessionComplete(elapsedSec / 60, plannedMinutes);
+  await _origCompleteTimer();
+  await onSessionComplete(elapsedSec / 60, plannedMinutes);
 };
 
 var _origConfirmEnd = window.confirmEnd;
-window.confirmEnd = function() {
+window.confirmEnd = async function() {
   var sp = document.getElementById('sessionPopup');
   if (sp) sp.classList.add('hidden');
   var td = document.getElementById('tagDropdown');
@@ -280,8 +280,8 @@ window.confirmEnd = function() {
     activeSession.accumulatedMs += Date.now() - activeSession.lastResumeTime;
     activeSession.lastResumeTime = null;
   }
-  _origConfirmEnd();
-  onSessionComplete(elapsedSec / 60, plannedMinutes);
+  await _origConfirmEnd();
+  await onSessionComplete(elapsedSec / 60, plannedMinutes);
 };
 
 var _origSetTimer = window.setTimer;
@@ -291,38 +291,38 @@ window.setTimer = function() {
 };
 
 // Tag selection functions
-window.selectSessionTag = function(tagId) {
+window.selectSessionTag = async function(tagId) {
   editingTagForSession = tagId;
-  renderSessionTagDisplay();
+  await renderSessionTagDisplay();
   var td = document.getElementById('tagDropdown');
   if (td) td.classList.add('hidden');
 };
 
-window.selectSessionGoal = function(goalId) {
+window.selectSessionGoal = async function(goalId) {
   editingGoalForSession = goalId;
-  renderSessionTagDisplay();
+  await renderSessionTagDisplay();
   var td = document.getElementById('tagDropdown');
   if (td) td.classList.add('hidden');
 };
 
-window.selectAddSessionTag = function(tagId) {
+window.selectAddSessionTag = async function(tagId) {
   addSessionTagId = tagId;
-  renderAddSessionTagDisplay();
+  await renderAddSessionTagDisplay();
   var td = document.getElementById('addTagDropdown');
   if (td) td.classList.add('hidden');
 };
 
-window.selectAddSessionGoal = function(goalId) {
+window.selectAddSessionGoal = async function(goalId) {
   addSessionGoalId = goalId;
-  renderAddSessionTagDisplay();
+  await renderAddSessionTagDisplay();
   var td = document.getElementById('addTagDropdown');
   if (td) td.classList.add('hidden');
 };
 
-function renderTagList(listId, mode) {
+async function renderTagList(listId, mode) {
   var container = document.getElementById(listId);
   if (!container) return;
-  var data = getTagsWithGoals();
+  var data = await getTagsWithGoals();
   var tags = data.tags || [];
   var goals = data.goals || [];
   var fn = mode === 'edit' ? 'selectSessionTag' : 'selectAddSessionTag';
@@ -351,33 +351,33 @@ function renderTagList(listId, mode) {
   container.innerHTML = html;
 }
 
-window.toggleTagDropdown = function(e) {
+window.toggleTagDropdown = async function(e) {
   e.stopPropagation();
   var dd = document.getElementById('tagDropdown');
   if (!dd) return;
   dd.classList.toggle('hidden');
   if (!dd.classList.contains('hidden')) {
-    renderTagList('tagList', 'edit');
+    await renderTagList('tagList', 'edit');
   }
 };
 
-window.toggleAddTagDropdown = function(e) {
+window.toggleAddTagDropdown = async function(e) {
   e.stopPropagation();
   var dd = document.getElementById('addTagDropdown');
   if (!dd) return;
   dd.classList.toggle('hidden');
   if (!dd.classList.contains('hidden')) {
-    renderTagList('addTagList', 'add');
+    await renderTagList('addTagList', 'add');
   }
 };
 
-window.openSessionPopup = function(sessionId) {
+window.openSessionPopup = async function(sessionId) {
   editingSessionId = sessionId;
   var session = null;
   if (activeSession && activeSession.id === sessionId) {
     session = activeSession;
   } else {
-    var sessions = getSessions();
+    var sessions = await getSessions();
     var keys = Object.keys(sessions);
     for (var k = 0; k < keys.length; k++) {
       for (var e = 0; e < sessions[keys[k]].length; e++) {
@@ -394,7 +394,7 @@ window.openSessionPopup = function(sessionId) {
   if (input) input.value = session.taskName || '';
   editingTagForSession = session.tagId || null;
   editingGoalForSession = session.goalId || null;
-  renderSessionTagDisplay();
+  await renderSessionTagDisplay();
   var popup = document.getElementById('sessionPopup');
   if (popup) popup.classList.remove('hidden');
 };
@@ -408,38 +408,38 @@ window.closeSessionPopup = function(e) {
   }
 };
 
-window.saveSessionEdit = function() {
+window.saveSessionEdit = async function() {
   var taskName = (document.getElementById('sessionTaskInput').value || '').trim();
   if (activeSession && activeSession.id === editingSessionId) {
     activeSession.taskName = taskName;
     activeSession.tagId = editingTagForSession;
     activeSession.goalId = editingGoalForSession;
-    renderTimeline();
-    renderSessionTimeline();
+    await renderTimeline();
+    await renderSessionTimeline();
     var popup = document.getElementById('sessionPopup');
     if (popup) popup.classList.add('hidden');
     return;
   }
-  window.db.updateSession(editingSessionId, taskName, editingTagForSession, '', editingGoalForSession);
-  renderTimeline();
-  renderSessionTimeline();
+  await window.db.updateSession(editingSessionId, taskName, editingTagForSession, '', editingGoalForSession);
+  await renderTimeline();
+  await renderSessionTimeline();
   var popup = document.getElementById('sessionPopup');
   if (popup) popup.classList.add('hidden');
 };
 
-function renderSessionTagDisplay() {
+async function renderSessionTagDisplay() {
   var container = document.getElementById('sessionTagDisplay');
   if (!container) return;
   var parts = [];
   if (editingTagForSession) {
-    var tags = getTags();
+    var tags = await getTags();
     var tag = tags.find(function(t) { return t.id === editingTagForSession; });
     if (tag) {
       parts.push('<span class="tag-bubble" style="background:rgba(' + hexToRgb(tag.color) + ',0.12);color:' + tag.color + ';border:1px solid rgba(' + hexToRgb(tag.color) + ',0.25)">#' + tag.name + ' <span style="cursor:pointer;margin-left:4px" onclick="window.clearSessionTag()">✕</span></span>');
     }
   }
   if (editingGoalForSession) {
-    var gw = getTagsWithGoals();
+    var gw = await getTagsWithGoals();
     var goal = (gw.goals || []).find(function(g) { return g.goalId === editingGoalForSession; });
     if (goal) {
       parts.push('<span class="tag-bubble" style="background:rgba(' + hexToRgb(goal.color) + ',0.12);color:' + goal.color + ';border:1px solid rgba(' + hexToRgb(goal.color) + ',0.25)">' + goal.name + ' <span style="cursor:pointer;margin-left:4px" onclick="window.clearSessionGoal()">✕</span></span>');
@@ -448,16 +448,16 @@ function renderSessionTagDisplay() {
   container.innerHTML = parts.length > 0 ? parts.join(' ') : '<span class="text-xs text-gray-400">None selected</span>';
 }
 
-window.clearSessionTag = function() {
+window.clearSessionTag = async function() {
   editingTagForSession = null;
-  renderSessionTagDisplay();
+  await renderSessionTagDisplay();
   var td = document.getElementById('tagDropdown');
   if (td) td.classList.add('hidden');
 };
 
-window.clearSessionGoal = function() {
+window.clearSessionGoal = async function() {
   editingGoalForSession = null;
-  renderSessionTagDisplay();
+  await renderSessionTagDisplay();
   var td = document.getElementById('tagDropdown');
   if (td) td.classList.add('hidden');
 };
@@ -501,26 +501,26 @@ window.selectTagColor = function(color) {
   renderColorPalette();
 };
 
-window.saveNewTag = function() {
+window.saveNewTag = async function() {
   var name = (document.getElementById('newTagNameInput').value || '').trim();
   if (!name) return;
-  var tags = getTags();
+  var tags = await getTags();
   var newTag = { id: 'tag_' + Date.now(), name: name, color: selectedTagColor };
   tags.push(newTag);
-  saveTags(tags);
+  await saveTags(tags);
   var popup = document.getElementById('newTagPopup');
   if (popup) popup.classList.add('hidden');
 };
 
 // Add Session Popup
-window.openAddSessionPopup = function() {
+window.openAddSessionPopup = async function() {
   var inp1 = document.getElementById('addSessionTaskInput');
   var inp2 = document.getElementById('addSessionDurationInput');
   if (inp1) inp1.value = '';
   if (inp2) inp2.value = '25';
   addSessionTagId = null;
   addSessionGoalId = null;
-  renderAddSessionTagDisplay();
+  await renderAddSessionTagDisplay();
   var popup = document.getElementById('addSessionPopup');
   if (popup) popup.classList.remove('hidden');
 };
@@ -534,7 +534,7 @@ window.closeAddSessionPopup = function(e) {
   }
 };
 
-window.saveAddSession = function() {
+window.saveAddSession = async function() {
   var taskName = (document.getElementById('addSessionTaskInput').value || '').trim();
   var duration = parseFloat(document.getElementById('addSessionDurationInput').value) || 25;
   var now = Date.now();
@@ -549,26 +549,26 @@ window.saveAddSession = function() {
     tagId: addSessionTagId || null,
     goalId: addSessionGoalId || null
   };
-  window.db.saveSession(session);
-  renderTimeline();
-  renderSessionTimeline();
+  await window.db.saveSession(session);
+  await renderTimeline();
+  await renderSessionTimeline();
   var popup = document.getElementById('addSessionPopup');
   if (popup) popup.classList.add('hidden');
 };
 
-function renderAddSessionTagDisplay() {
+async function renderAddSessionTagDisplay() {
   var container = document.getElementById('addSessionTagDisplay');
   if (!container) return;
   var parts = [];
   if (addSessionTagId) {
-    var tags = getTags();
+    var tags = await getTags();
     var tag = tags.find(function(t) { return t.id === addSessionTagId; });
     if (tag) {
       parts.push('<span class="tag-bubble" style="background:rgba(' + hexToRgb(tag.color) + ',0.12);color:' + tag.color + ';border:1px solid rgba(' + hexToRgb(tag.color) + ',0.25)">#' + tag.name + ' <span style="cursor:pointer;margin-left:4px" onclick="window.clearAddSessionTag()">✕</span></span>');
     }
   }
   if (addSessionGoalId) {
-    var gw = getTagsWithGoals();
+    var gw = await getTagsWithGoals();
     var goal = (gw.goals || []).find(function(g) { return g.goalId === addSessionGoalId; });
     if (goal) {
       parts.push('<span class="tag-bubble" style="background:rgba(' + hexToRgb(goal.color) + ',0.12);color:' + goal.color + ';border:1px solid rgba(' + hexToRgb(goal.color) + ',0.25)">' + goal.name + ' <span style="cursor:pointer;margin-left:4px" onclick="window.clearAddSessionGoal()">✕</span></span>');
@@ -577,16 +577,16 @@ function renderAddSessionTagDisplay() {
   container.innerHTML = parts.length > 0 ? parts.join(' ') : '<span class="text-xs text-gray-400">None selected</span>';
 }
 
-window.clearAddSessionTag = function() {
+window.clearAddSessionTag = async function() {
   addSessionTagId = null;
-  renderAddSessionTagDisplay();
+  await renderAddSessionTagDisplay();
   var td = document.getElementById('addTagDropdown');
   if (td) td.classList.add('hidden');
 };
 
-window.clearAddSessionGoal = function() {
+window.clearAddSessionGoal = async function() {
   addSessionGoalId = null;
-  renderAddSessionTagDisplay();
+  await renderAddSessionTagDisplay();
   var td = document.getElementById('addTagDropdown');
   if (td) td.classList.add('hidden');
 };
@@ -594,8 +594,8 @@ window.clearAddSessionGoal = function() {
 /* ═══════════════════════════════════════
    Task dropdown for session editing
 */
-function getTaskList() {
-  try { return window.db.getTasks() || []; } catch(e) { return []; }
+async function getTaskList() {
+  try { return await window.db.getTasks() || []; } catch(e) { return []; }
 }
 
 function getGoalName(goalId, goals) {
@@ -606,9 +606,9 @@ function getGoalName(goalId, goals) {
   return '';
 }
 
-function renderTaskList(taskListEl, inputEl, goalVarSetter) {
-  var tasks = getTaskList();
-  var gw = getTagsWithGoals();
+async function renderTaskList(taskListEl, inputEl, goalVarSetter) {
+  var tasks = await getTaskList();
+  var gw = await getTagsWithGoals();
   var goals = gw.goals || [];
   if (tasks.length === 0) {
     taskListEl.innerHTML = '<div class="text-sm text-gray-400 text-center py-4">No tasks yet</div>';
@@ -629,47 +629,47 @@ function renderTaskList(taskListEl, inputEl, goalVarSetter) {
   taskListEl.innerHTML = html;
 }
 
-window.toggleSessionTaskDropdown = function(e) {
+window.toggleSessionTaskDropdown = async function(e) {
   if (e) e.stopPropagation();
   var dd = document.getElementById('sessionTaskDropdown');
   var list = document.getElementById('sessionTaskList');
   if (!dd || !list) return;
   if (dd.classList.contains('hidden')) {
-    renderTaskList(list, document.getElementById('sessionTaskInput'), function(goalId) { editingGoalForSession = goalId; });
+    await renderTaskList(list, document.getElementById('sessionTaskInput'), function(goalId) { editingGoalForSession = goalId; });
     dd.classList.remove('hidden');
   } else {
     dd.classList.add('hidden');
   }
 };
 
-window.toggleAddSessionTaskDropdown = function(e) {
+window.toggleAddSessionTaskDropdown = async function(e) {
   if (e) e.stopPropagation();
   var dd = document.getElementById('addSessionTaskDropdown');
   var list = document.getElementById('addSessionTaskList');
   if (!dd || !list) return;
   if (dd.classList.contains('hidden')) {
-    renderTaskList(list, document.getElementById('addSessionTaskInput'), function(goalId) { addSessionGoalId = goalId; });
+    await renderTaskList(list, document.getElementById('addSessionTaskInput'), function(goalId) { addSessionGoalId = goalId; });
     dd.classList.remove('hidden');
   } else {
     dd.classList.add('hidden');
   }
 };
 
-window.selectTaskFromList = function(taskName, goalId, goalName) {
+window.selectTaskFromList = async function(taskName, goalId, goalName) {
   var sessionDd = document.getElementById('sessionTaskDropdown');
   var addDd = document.getElementById('addSessionTaskDropdown');
   if (sessionDd && !sessionDd.classList.contains('hidden')) {
     document.getElementById('sessionTaskInput').value = taskName;
     if (goalId) {
       editingGoalForSession = goalId;
-      renderSessionTagDisplay();
+      await renderSessionTagDisplay();
     }
     sessionDd.classList.add('hidden');
   } else if (addDd && !addDd.classList.contains('hidden')) {
     document.getElementById('addSessionTaskInput').value = taskName;
     if (goalId) {
       addSessionGoalId = goalId;
-      renderAddSessionTagDisplay();
+      await renderAddSessionTagDisplay();
     }
     addDd.classList.add('hidden');
   }
@@ -703,9 +703,9 @@ function formatDuration(minutes) {
 }
 
 /* ─── Helper: get today's sessions sorted by startTime ─── */
-function getTodaySessions() {
+async function getTodaySessions() {
   try {
-    var grouped = window.db.getSessionsGrouped() || {};
+    var grouped = await window.db.getSessionsGrouped() || {};
     var key = todayKey();
     var list = grouped[key] || [];
     return list.sort(function(a, b) { return a.startTime - b.startTime; });
@@ -717,9 +717,7 @@ function getTodaySessions() {
    الوقت (فوق) → الدائرة (وسط) → المدة (تحت)
    والـ connector خط رفيع بين كل نود والتانية
    ───────────────────────────────────────────────────────── */
-function renderSessionTimeline() {
-  var track = document.getElementById('sessionTimelineTrack');
-  if (!track) return;
+async function renderSessionTimeline() {
 
   var todaySessions = getTodaySessions();
   var connector = '<div class="flex-shrink-0" style="width:24px;height:1px;background:#E5E7EB"></div>';
@@ -862,7 +860,7 @@ window.openSessionTimelineModal = function(sessionId) {
     if (activeSession && activeSession.id === sessionId) {
       session = activeSession;
     } else {
-      var todaySessions = getTodaySessions();
+  var todaySessions = await getTodaySessions();
       for (var i = 0; i < todaySessions.length; i++) {
         if (todaySessions[i].id === sessionId) { session = todaySessions[i]; break; }
       }
@@ -881,17 +879,17 @@ window.closeSessionTimelineModal = function() {
   if (modal) modal.classList.remove('open');
 };
 
-window.saveSessionTimeline = function() {
+window.saveSessionTimeline = async function() {
   var taskName = (document.getElementById('sessionTimelineTaskInput').value || '').trim();
 
   if (sessionTimelineEditId && activeSession && activeSession.id === sessionTimelineEditId) {
     activeSession.taskName = taskName;
   } else if (sessionTimelineEditId) {
-    window.db.updateSession(sessionTimelineEditId, taskName, null, '');
+    await window.db.updateSession(sessionTimelineEditId, taskName, null, '');
   }
 
-  renderTimeline();
-  renderSessionTimeline();
+  await renderTimeline();
+  await renderSessionTimeline();
   window.closeSessionTimelineModal();
 };
 
@@ -901,15 +899,15 @@ window.toggleTaskPopup = function() {
   var currentlyOn = toggle.classList.contains('active');
   if (currentlyOn) {
     toggle.classList.remove('active');
-    window.db.setSetting('showTaskPopupOnStart', 'false');
+    await window.db.setSetting('showTaskPopupOnStart', 'false');
   } else {
     toggle.classList.add('active');
-    window.db.setSetting('showTaskPopupOnStart', 'true');
+    await window.db.setSetting('showTaskPopupOnStart', 'true');
   }
 };
 
-(function() {
-  var setting = window.db.getSetting('showTaskPopupOnStart');
+(async function() {
+  var setting = await window.db.getSetting('showTaskPopupOnStart');
   var toggle = document.getElementById('taskPopupToggle');
   if (toggle && setting === 'false') {
     toggle.classList.remove('active');
@@ -923,5 +921,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-renderTimeline();
-renderSessionTimeline();
+(async function() {
+  await renderTimeline();
+  await renderSessionTimeline();
+})();

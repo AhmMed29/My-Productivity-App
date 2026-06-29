@@ -190,16 +190,21 @@ function hexToRgb(h) {
   return [r, g, b];
 }
 
-window.initPomoShader = function() {
+window.initPomoShader = async function() {
   if (_shaderInstance) return;
+  var savedTheme = window.db ? await window.db.getSetting('pomoTheme') || 'ocean' : 'ocean';
+  var circle = document.getElementById('timerCircle');
+  if (savedTheme === 'minimal') {
+    if (circle) circle.classList.add('minimal-mode');
+    return;
+  }
   var canvas = document.getElementById('pomoShaderCanvas');
   if (!canvas) return;
   _shaderInstance = initShader(canvas);
-  var savedTheme = window.db && window.db.getSetting && window.db.getSetting('pomoTheme') || 'ocean';
   if (savedTheme === 'custom') {
-    var cc1 = window.db.getSetting('customColor1');
-    var cc2 = window.db.getSetting('customColor2');
-    var cbg = window.db.getSetting('customBgColor');
+    var cc1 = await window.db.getSetting('customColor1');
+    var cc2 = await window.db.getSetting('customColor2');
+    var cbg = await window.db.getSetting('customBgColor');
     if (cc1 && cc2 && cbg) {
       _shaderInstance.setColors(hexToRgb(cc1), hexToRgb(cc2), hexToRgb(cbg));
     } else {
@@ -208,7 +213,6 @@ window.initPomoShader = function() {
   } else {
     _shaderInstance.setTheme(savedTheme);
   }
-  var circle = document.getElementById('timerCircle');
   if (circle && _shaderInstance) {
     circle.addEventListener('mousemove', function(e) {
       var rect = canvas.getBoundingClientRect();

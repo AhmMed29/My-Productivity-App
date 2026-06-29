@@ -10,11 +10,14 @@ var isRunning = false;
 var timerId = null;
 var runStartTime = 0;
 
-function loadSettings() {
+async function loadSettings() {
+  var work = await window.db.getSetting('workMinutes')
+  var sb = await window.db.getSetting('shortBreakMinutes')
+  var lb = await window.db.getSetting('longBreakMinutes')
   return {
-    workMinutes: parseInt(window.db.getSetting('workMinutes')) || 25,
-    shortBreakMinutes: parseInt(window.db.getSetting('shortBreakMinutes')) || 5,
-    longBreakMinutes: parseInt(window.db.getSetting('longBreakMinutes')) || 15,
+    workMinutes: parseInt(work) || 25,
+    shortBreakMinutes: parseInt(sb) || 5,
+    longBreakMinutes: parseInt(lb) || 15,
   };
 }
 
@@ -31,8 +34,8 @@ function formatTime(secs) {
   return (mm < 10 ? '0' : '') + mm + ':' + (ss < 10 ? '0' : '') + ss;
 }
 
-function setPhaseTime(p) {
-  var s = loadSettings();
+async function setPhaseTime(p) {
+  var s = await loadSettings();
   totalSeconds = toDuration(s, p);
   remainingSeconds = totalSeconds;
   accumulatedSeconds = 0;
@@ -54,15 +57,15 @@ function stopTimer() {
   if (timerId) { clearTimeout(timerId); timerId = null; }
 }
 
-function tick() {
+async function tick() {
   if (!isRunning) return;
   recalcRemaining();
   if (remainingSeconds <= 0) {
     remainingSeconds = 0;
     stopTimer();
-    window.updateSidebar();
+    await window.updateSidebar();
     updateUI();
-    completeTimer();
+    await completeTimer();
     return;
   }
   updateUI();
@@ -75,10 +78,10 @@ function startTimer() {
   tick();
 }
 
-window.toggleTimer = function() {
+window.toggleTimer = async function() {
   if (phase === 'idle') {
     phase = 'work';
-    setPhaseTime('work');
+    await setPhaseTime('work');
     startTimer();
     if (window.shaderSetRunning) window.shaderSetRunning(true);
     if (window.AudioManager) window.AudioManager.playSound('pomo-start.mp3');
@@ -96,37 +99,37 @@ window.toggleTimer = function() {
   updateUI();
 };
 
-window.resetTimer = function() {
+window.resetTimer = async function() {
   stopTimer();
   if (window.shaderSetRunning) window.shaderSetRunning(false);
   phase = 'idle';
-  setPhaseTime('work');
+  await setPhaseTime('work');
   sessionCount = 0;
   updateUI();
 };
 
-window.skipPhase = function() {
+window.skipPhase = async function() {
   if (phase === 'idle') return;
   stopTimer();
   if (phase === 'work') sessionCount++;
   phase = nextPhase(phase, sessionCount);
-  setPhaseTime(phase);
+  await setPhaseTime(phase);
   updateUI();
 };
 
-function advancePhase() {
+async function advancePhase() {
   if (phase === 'work') {
     sessionCount++;
     phase = sessionCount % SESSIONS_BEFORE_LONG_BREAK === 0 ? 'longBreak' : 'shortBreak';
   } else {
     phase = 'work';
   }
-  setPhaseTime(phase);
+  await setPhaseTime(phase);
 }
 
-function completeTimer() {
+async function completeTimer() {
   if (window.shaderSetRunning) window.shaderSetRunning(false);
-  advancePhase();
+  await advancePhase();
   recalcRemaining();
   updateUI();
   if (window.AudioManager) window.AudioManager.playSound('pomo-end.mp3');
@@ -180,38 +183,22 @@ function updateSessionDots() {
 
 // Settings
 window.openPomoSettings = function() {
-  var sheet = document.getElementById('pomoSettings');
-  if (!sheet) return;
-  var s = loadSettings();
-  document.getElementById('settingWork').value = s.workMinutes;
-  document.getElementById('settingShortBreak').value = s.shortBreakMinutes;
-  document.getElementById('settingLongBreak').value = s.longBreakMinutes;
-  sheet.classList.remove('hidden');
+  if (window.switchSettingsTab) window.switchSettingsTab('pomodoro');
+  if (window.openSettings) window.openSettings();
 };
 
-window.closePomoSettings = function(e) {
-  if (e && e.target !== e.currentTarget) return;
-  var sheet = document.getElementById('pomoSettings');
-  if (!sheet) return;
-  sheet.classList.add('closing');
-  setTimeout(function() {
-    sheet.classList.add('hidden');
-    sheet.classList.remove('closing');
-  }, 300);
-};
-
-window.savePomoSettings = function() {
+window.savePomoSettings = async function() {
   var w = parseInt(document.getElementById('settingWork').value) || 25;
   var sb = parseInt(document.getElementById('settingShortBreak').value) || 5;
-  var lb = parseInt(document.getElementById('settingLongBreak').value) || 15;
+  var lb = parseInt(document.getElementById('settingLongBreak').value) || 90;
   if (w < 1) w = 1; if (w > 90) w = 90;
   if (sb < 1) sb = 1; if (sb > 30) sb = 30;
   if (lb < 1) lb = 1; if (lb > 60) lb = 60;
-  window.db.setSetting('workMinutes', w);
-  window.db.setSetting('shortBreakMinutes', sb);
-  window.db.setSetting('longBreakMinutes', lb);
-  if (phase === 'idle') setPhaseTime('work');
-  else if (!isRunning) { setPhaseTime(phase); updateUI(); }
+  await window.db.setSetting('workMinutes', w);
+  await window.db.setSetting('shortBreakMinutes', sb);
+  await window.db.setSetting('longBreakMinutes', lb);
+  if (phase === 'idle') await setPhaseTime('work');
+  else if (!isRunning) { await setPhaseTime(phase); updateUI(); }
   var sheet = document.getElementById('pomoSettings');
   if (!sheet) return;
   sheet.classList.add('closing');
@@ -233,10 +220,10 @@ window.openTimePopup = function() {};
 window.closeTimePopup = function() {};
 
 // Preset & time adjustment
-window.setPreset = function(minutes) {
-  window.db.setSetting('workMinutes', minutes);
+window.setPreset = async function(minutes) {
+  await window.db.setSetting('workMinutes', minutes);
   if (phase === 'idle' || (phase === 'work' && !isRunning)) {
-    setPhaseTime('work');
+    await setPhaseTime('work');
     updateUI();
   }
 };
@@ -250,10 +237,10 @@ window.adjustTime = function(delta) {
 };
 
 // End popup
-window.confirmEnd = function() {
+window.confirmEnd = async function() {
   stopTimer();
   phase = 'idle';
-  advancePhase();
+  await advancePhase();
   recalcRemaining();
   updateUI();
   if (window.AudioManager) window.AudioManager.playSound('pomo-end.mp3');
@@ -284,8 +271,10 @@ if (nameInput) {
     }
   });
 }
-setPhaseTime('work');
-updateUI();
+(async function() {
+  await setPhaseTime('work');
+  updateUI();
+})();
 
 document.getElementById('playBtn').addEventListener('click', function(e) {
   e.stopPropagation();
@@ -300,5 +289,7 @@ if (timerCircle) {
   });
 }
 
-initStats();
-updateSidebar();
+(async function() {
+  await initStats();
+  await updateSidebar();
+})();

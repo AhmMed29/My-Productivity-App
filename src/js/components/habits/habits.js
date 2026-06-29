@@ -29,14 +29,13 @@ function startDateKey() {
   return dateKey(startDate);
 }
 
-function loadHabitsFromDB() {
+async function loadHabitsFromDB() {
   try {
-    var habits = window.db.getHabits() || [];
+    var habits = await window.db.getHabits() || [];
     habitsCache = habits;
-    var logs = window.db.getHabitLogs ? true : false;
     var allLogs = {};
     for (var h = 0; h < habits.length; h++) {
-      var habitLogs = window.db.getHabitLogs(habits[h].id, startDateKey(), todayKey()) || [];
+      var habitLogs = await window.db.getHabitLogs(habits[h].id, startDateKey(), todayKey()) || [];
       allLogs[habits[h].id] = {};
       for (var l = 0; l < habitLogs.length; l++) {
         allLogs[habits[h].id][habitLogs[l].date] = habitLogs[l].value;
@@ -63,8 +62,8 @@ function calcPct(habit, logs) {
   return Math.round(total / DAY_COUNT * 100);
 }
 
-function render() {
-  var data = loadHabitsFromDB();
+async function render() {
+  var data = await loadHabitsFromDB();
   var habits = data.habits;
   var logs = data.logs;
 
@@ -123,8 +122,8 @@ function calcStreak(habit, logs) {
   return max;
 }
 
-function openModal(habitId) {
-  var data = loadHabitsFromDB();
+async function openModal(habitId) {
+  var data = await loadHabitsFromDB();
   var habit = null;
   for (var i = 0; i < data.habits.length; i++) {
     if (data.habits[i].id === habitId) { habit = data.habits[i]; break; }
@@ -178,10 +177,10 @@ function openModal(habitId) {
     openEditModal(habitId);
   });
   modalContent.querySelector('.delete-habit-btn').addEventListener('click', function() {
-    showConfirmModal('حذف العادة', 'هل أنت متأكد من حذف "' + habit.name + '"?', 'حذف', function() {
-      window.db.deleteHabit(habitId);
+    showConfirmModal('حذف العادة', 'هل أنت متأكد من حذف "' + habit.name + '"?', 'حذف', async function() {
+      await window.db.deleteHabit(habitId);
       modal.classList.remove('open');
-      render();
+      await render();
     });
   });
   modal.classList.add('open');
@@ -189,23 +188,23 @@ function openModal(habitId) {
 
 var colorPresets = ['#f59e0b','#8b5cf6','#3b82f6','#22c55e','#06b6d4','#f43f5e','#6366f1','#ec4899','#f97316','#a855f7'];
 
-function openEditModal(habitId) {
-  var data = loadHabitsFromDB();
+async function openEditModal(habitId) {
+  var data = await loadHabitsFromDB();
   var habit = null;
   for (var i = 0; i < data.habits.length; i++) {
     if (data.habits[i].id === habitId) { habit = data.habits[i]; break; }
   }
   if (!habit) return;
-  showHabitForm(habit.name, habit.color, function(name, color, durationType, durationStart, durationEnd) {
-    window.db.updateHabit(habitId, { name: name, color: color, durationType: durationType, durationStart: durationStart, durationEnd: durationEnd });
-    render();
+  showHabitForm(habit.name, habit.color, async function(name, color, durationType, durationStart, durationEnd) {
+    await window.db.updateHabit(habitId, { name: name, color: color, durationType: durationType, durationStart: durationStart, durationEnd: durationEnd });
+    await render();
   }, habit.durationType, habit.durationStart, habit.durationEnd);
 }
 
 function openAddModal() {
-  showHabitForm('', '#3b82f6', function(name, color, durationType, durationStart, durationEnd) {
-    window.db.createHabit({ id: 'h_' + Date.now(), name: name, color: color, durationType: durationType, durationStart: durationStart, durationEnd: durationEnd });
-    render();
+  showHabitForm('', '#3b82f6', async function(name, color, durationType, durationStart, durationEnd) {
+    await window.db.createHabit({ id: 'h_' + Date.now(), name: name, color: color, durationType: durationType, durationStart: durationStart, durationEnd: durationEnd });
+    await render();
   });
 }
 
@@ -336,15 +335,15 @@ window.confirmConfirm = function() {
 };
 
 // Single delegated click handler (set up once)
-document.getElementById('table-body').addEventListener('click', function(e) {
+document.getElementById('table-body').addEventListener('click', async function(e) {
   var toggle = e.target.closest('.habit-toggle');
   if (toggle) {
     var habitId = toggle.getAttribute('data-habit-id');
     var date = toggle.getAttribute('data-date');
     var value = parseInt(toggle.getAttribute('data-value'));
     if (habitId && date) {
-      window.db.setHabitLog(habitId, date, value);
-      render();
+      await window.db.setHabitLog(habitId, date, value);
+      await render();
     }
     return;
   }

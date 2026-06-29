@@ -42,7 +42,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: rgba(0,0,0,0.4);
+  background: transparent;
   pointer-events: none;
 }
 .timer-face {
@@ -200,7 +200,48 @@ body {
   min-width: 100%;
 }
 
-/* ── Settings Sheet ── */
+/* ── Settings Modal Timer Rows ── */
+.settings-timer-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px; background:#fff; border-radius:10px;
+  border:1px solid rgba(195,198,213,0.5); margin-bottom:10px;
+}
+.settings-step-btn {
+  width:32px; height:32px; border-radius:50%; border:1px solid #D1D5DB;
+  background:#fff; color:#374151; font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all 0.15s; line-height:1;
+}
+.settings-step-btn:hover { background:#f3f4f6; }
+.settings-timer-input {
+  width:60px; padding:6px 8px; font-size:16px; font-weight:600;
+  text-align:center; border:1px solid #D1D5DB; border-radius:6px;
+  outline:none; font-family:inherit;
+}
+.settings-timer-input:focus { border-color:#0e58c5; box-shadow:0 0 0 2px rgba(14,88,197,0.1); }
+.settings-timer-input::-webkit-inner-spin-button,
+.settings-timer-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+.settings-timer-input[type=number] { -moz-appearance:textfield; }
+
+/* ── Minimal theme ── */
+.timer-circle-wrapper.minimal-mode {
+  width:auto !important; height:auto !important; min-width:0 !important; min-height:0 !important;
+  border-radius:0; background:transparent !important;
+}
+.timer-circle-wrapper.minimal-mode #pomoShaderCanvas { display:none; }
+.timer-circle-wrapper.minimal-mode .timer-bg { display:none; }
+.timer-circle-wrapper.minimal-mode svg { display:none; }
+.timer-circle-wrapper.minimal-mode .timer-face {
+  position:static; pointer-events:auto;
+}
+.timer-circle-wrapper.minimal-mode .timer-text {
+  font-size:72px; color:#0b1c30; font-family:'Manrope','Tajawal',sans-serif;
+  letter-spacing:2px; margin-bottom:4px;
+}
+.timer-circle-wrapper.minimal-mode .timer-label {
+  color:#9CA3AF; font-size:14px;
+}
+
+/* ── Settings Sheet (legacy, kept for reference) ── */
 #pomoSettings {
   opacity: 0;
   visibility: hidden;

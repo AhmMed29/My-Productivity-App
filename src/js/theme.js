@@ -17,26 +17,39 @@ function applyTheme() {
   if (bg) bg.style.stroke = '#F3F4F6';
 }
 
-function openSettings() {
+async function openSettings() {
   var pages = ['home', 'pomodoro', 'habits'];
   for (var i = 0; i < pages.length; i++) {
     var el = document.getElementById('page-' + pages[i]);
     if (el && !el.classList.contains('hidden')) {
-      window.db.setSetting('lastPage', pages[i]);
+      await window.db.setSetting('lastPage', pages[i]);
       break;
     }
   }
-  showPage('settings');
+  if (window.switchSettingsTab) {
+    window.switchSettingsTab('general');
+  }
+  document.getElementById('settingsModal').style.display = 'flex';
   var spd = document.getElementById('storagePathDisplay');
-  if (spd && typeof STORAGE !== 'undefined' && STORAGE.getPath) spd.textContent = STORAGE.getPath();
+  if (spd) {
+    var p = await window.db.getSetting('storagePath');
+    spd.textContent = p || await window.db.getSetting('defaultStoragePath') || 'Default';
+  }
+  window.settingsDirty = false;
+  var row = document.getElementById('settingsBtnRow');
+  if (row) row.style.display = 'none';
+  var cancel = document.getElementById('settingsCancelBtn');
+  if (cancel) cancel.style.display = '';
 }
 
-function closeSettings() {
-  var prev = window.db.getSetting('lastPage') || 'pomodoro';
-  showPage(prev);
-}
-
-function saveSettings() { closeSettings(); }
+window.closeSettings = function(e) {
+  if (e && e.target !== e.currentTarget) return;
+  if (window.settingsDirty) {
+    document.getElementById('settingsConfirmModal').style.display = 'flex';
+    return;
+  }
+  document.getElementById('settingsModal').style.display = 'none';
+};
 
 function cancelSettings() { closeSettings(); }
 

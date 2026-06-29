@@ -1,6 +1,7 @@
 node_modules/
 .worktrees/
 dist/
+dist2/
 build-out/
 
 # Generated / personal

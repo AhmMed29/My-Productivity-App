@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.buymeacoffee.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self'; img-src 'self' data: https:; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'">
 <title>Jamrah جَــمْــرَه</title>
 <link rel="icon" type="image/svg+xml" href="assets/Jamrah-Icon.svg">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" integrity="sha384-3B6NwesSXE7YJlcLI9RpRqGf2p/EgVH8BgoKTaUrmKNDkHPStTQ3EyoYjCGXaOTS" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com" rel="preconnect">
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script>
 window.tailwind={ config: {
   theme:{
@@ -24,7 +26,7 @@ window.tailwind={ config: {
   }
 } }
 </script>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries" integrity="sha384-1DcZPGeODWbGGjS/i/n4ULX/pEc0DPcKK2WhyuWEmBXRfzOwoVTDQBN9C3C5jJHK" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="css/pomodoro.css">
 <link rel="stylesheet" href="css/home.css">
 <link rel="stylesheet" href="css/habits.css">
@@ -47,40 +49,10 @@ window.tailwind={ config: {
 </div>
 </div>
 <div class="flex flex-1 overflow-hidden">
-<div id="sidebar-container" class="sidebar-collapsed">
-<nav aria-label="Main Navigation" class="h-full w-full flex flex-col items-center py-4 justify-between shrink-0" id="navSidebar">
-<div class="flex flex-col items-center gap-6 w-full">
-
-<button aria-label="Pomodoro" class="text-white/70 hover:text-white transition-colors" data-page="pomodoro" onclick="showPage('pomodoro')" data-label="pomodoro">
-<span class="nav-icon"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="none" r="10" stroke="currentColor" stroke-width="2"></circle><circle cx="12" cy="12" r="4"></circle></svg></span>
-<span class="nav-label">Pomodoro</span>
-</button>
-<button aria-label="Habits" class="text-white/70 hover:text-white transition-colors" data-page="habits" onclick="showPage('habits')" data-label="habits">
-<span class="nav-icon"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-<span class="nav-label">Habits</span>
-</button>
-<button aria-label="Tasks" class="text-white/70 hover:text-white transition-colors" data-page="tasks" onclick="showPage('tasks')" data-label="tasks">
-<span class="nav-icon"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></span>
-<span class="nav-label">Tasks</span>
-</button>
-<button aria-label="Goals" class="text-white/70 hover:text-white transition-colors" data-page="goals" onclick="showPage('goals')" data-label="goals">
-<span class="nav-icon"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-<span class="nav-label">Goals</span>
-</button>
-</div>
-<div class="flex flex-col items-center gap-6 w-full mb-4">
-<button aria-label="Settings" class="text-white/70 hover:text-white transition-colors" onclick="openSettings()" data-label="settings">
-<span class="nav-icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span>
-<span class="nav-label">Settings</span>
-</button>
-</div>
-</nav>
-</div>
-
 <div id="page-home" class="hidden flex-1 flex-col items-center justify-center bg-white px-4"></div>
 
 <div id="page-pomodoro" class="flex flex-1 overflow-hidden min-h-0">
-<main class="flex-1 flex flex-col relative h-full overflow-hidden bg-black" id="mainArea">
+<main class="flex-1 flex flex-col relative h-full overflow-hidden bg-white" id="mainArea">
 <div class="flex-1 flex flex-col items-center justify-center min-h-0 overflow-y-auto px-4 relative" style="padding-top:60px;padding-bottom:60px">
 
   <!-- Timer circle wrapper -->
@@ -148,43 +120,8 @@ window.tailwind={ config: {
   </div>
 </div>
 
-<!-- Settings Bottom Sheet -->
-<div id="pomoSettings" class="fixed inset-0 z-50 flex items-end justify-center hidden" onclick="window.closePomoSettings(event)">
-  <div class="pomo-settings-sheet" onclick="event.stopPropagation()">
-    <h3 class="pomo-settings-title">Settings</h3>
-    <div class="pomo-setting-row">
-      <span class="pomo-setting-label">Focus</span>
-      <div class="pomo-setting-controls">
-        <button class="pomo-setting-btn" onclick="window.stepSetting('settingWork',-1)">-</button>
-        <input type="number" id="settingWork" class="pomo-setting-input" value="25" min="1" max="90">
-        <button class="pomo-setting-btn" onclick="window.stepSetting('settingWork',1)">+</button>
-      </div>
-    </div>
-    <div class="pomo-setting-row">
-      <span class="pomo-setting-label">Short Break</span>
-      <div class="pomo-setting-controls">
-        <button class="pomo-setting-btn" onclick="window.stepSetting('settingShortBreak',-1)">-</button>
-        <input type="number" id="settingShortBreak" class="pomo-setting-input" value="5" min="1" max="30">
-        <button class="pomo-setting-btn" onclick="window.stepSetting('settingShortBreak',1)">+</button>
-      </div>
-    </div>
-    <div class="pomo-setting-row">
-      <span class="pomo-setting-label">Long Break</span>
-      <div class="pomo-setting-controls">
-        <button class="pomo-setting-btn" onclick="window.stepSetting('settingLongBreak',-1)">-</button>
-        <input type="number" id="settingLongBreak" class="pomo-setting-input" value="15" min="1" max="60">
-        <button class="pomo-setting-btn" onclick="window.stepSetting('settingLongBreak',1)">+</button>
-      </div>
-    </div>
-    <div class="pomo-setting-row">
-      <span class="pomo-setting-label">Sound</span>
-      <div class="toggle-switch active" id="pomoSoundToggle" onclick="togglePomoSound()">
-        <div class="toggle-knob"></div>
-      </div>
-    </div>
-    <button class="pomo-settings-save" onclick="window.savePomoSettings()">Save</button>
-  </div>
-</div>
+<!-- Settings Bottom Sheet (moved to Settings Modal) -->
+
 
 <!-- End popup -->
 <div id="endPopup" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="closeEndPopup(event)">
@@ -257,60 +194,172 @@ window.tailwind={ config: {
 </div>
 <script src="js/components/habits/habits.js"></script>
 
-<div id="page-settings" class="hidden flex-1 flex flex-col bg-white overflow-auto p-4">
-<div class="w-full max-w-2xl mx-auto pt-12">
-<h1 class="text-2xl font-semibold text-gray-800 mb-8">Settings</h1>
-<div class="bg-gray-50 rounded-2xl p-6 sm:p-8 mt-6">
-<h2 class="text-lg font-medium text-gray-800 mb-4">Show task popup on Start</h2>
-<div class="flex items-center justify-between">
-  <span class="text-sm text-gray-500">Ask for task name when starting a session</span>
-  <div class="toggle-switch active" id="taskPopupToggle" onclick="toggleTaskPopup()">
-    <div class="toggle-knob"></div>
+<!-- Settings Modal (tabbed) -->
+<div id="settingsModal" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,0.35);backdrop-filter:blur(2px);align-items:center;justify-content:center;padding:16px" onclick="closeSettings(event)">
+<div style="background:#fff;border-radius:16px;width:100%;max-width:1000px;height:85vh;display:flex;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.12);border:1px solid rgba(195,198,213,0.3)" onclick="event.stopPropagation()">
+  <!-- Sidebar -->
+  <div style="width:200px;background:#f8f9ff;border-left:1px solid rgba(195,198,213,0.5);padding:28px 16px;flex-shrink:0;display:flex;flex-direction:column">
+      <h2 style="font-size:18px;font-weight:700;color:#0b1c30;margin-bottom:24px;padding:0 12px">Settings</h2>
+    <nav style="display:flex;flex-direction:column;gap:4px">
+      <button class="settings-tab-btn active" data-tab="general" onclick="switchSettingsTab('general')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:none;cursor:pointer;text-align:right;width:100%;font-size:14px;font-weight:600;color:#0e58c5;background:#dce9ff;transition:all 0.15s;font-family:inherit">
+        <span class="material-symbols-outlined" style="font-size:20px">tune</span>
+        <span>General</span>
+      </button>
+      <button class="settings-tab-btn" data-tab="pomodoro" onclick="switchSettingsTab('pomodoro')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:none;cursor:pointer;text-align:right;width:100%;font-size:14px;font-weight:500;color:#4B5563;background:transparent;transition:all 0.15s;font-family:inherit" onmouseover="this.style.background='#eef2ff';this.style.color='#0e58c5'" onmouseout="this.style.background='transparent';this.style.color='#4B5563'">
+        <span class="material-symbols-outlined" style="font-size:20px">timer</span>
+        <span>Pomodoro</span>
+      </button>
+      <button class="settings-tab-btn" data-tab="storage" onclick="switchSettingsTab('storage')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:none;cursor:pointer;text-align:right;width:100%;font-size:14px;font-weight:500;color:#4B5563;background:transparent;transition:all 0.15s;font-family:inherit" onmouseover="this.style.background='#eef2ff';this.style.color='#0e58c5'" onmouseout="this.style.background='transparent';this.style.color='#4B5563'">
+        <span class="material-symbols-outlined" style="font-size:20px">folder</span>
+        <span>Storage</span>
+      </button>
+    </nav>
   </div>
-</div>
-</div>
+  <!-- Content -->
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid rgba(195,198,213,0.3);background:rgba(255,255,255,0.8);backdrop-filter:blur(8px);flex-shrink:0">
+      <h3 style="font-size:22px;font-weight:600;color:#0b1c30" id="settingsTabTitle">General</h3>
+      <button onclick="closeSettings()" style="border:none;background:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#6B7280;transition:all 0.15s" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+        <span class="material-symbols-outlined" style="font-size:22px">close</span>
+      </button>
+    </div>
+    <!-- Scrollable content -->
+    <div style="flex:1;overflow-y:auto;padding:24px 28px">
+      <div style="max-width:700px;margin:0 auto">
 
-<div class="bg-gray-50 rounded-2xl p-6 sm:p-8 mt-6">
-<h2 class="text-lg font-medium text-gray-800 mb-6">مكان الحفظ</h2>
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-<span class="text-gray-700 font-medium text-base">المسار الحالي</span>
-<div class="flex items-center gap-3 w-full sm:w-auto">
-<span class="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border border-gray-200 max-w-full sm:max-w-[300px] truncate flex-1" id="storagePathDisplay">...</span>
-<button onclick="selectStoragePath()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors">تغيير</button>
-</div>
-</div>
-</div>
-<div class="bg-gray-50 rounded-2xl p-6 sm:p-8 mt-6">
-<h2 class="text-lg font-medium text-gray-800 mb-4">Pomodoro Shader Themes</h2>
-<div class="grid grid-cols-3 sm:grid-cols-5 gap-3" id="pomoThemeGrid">
-</div>
-<div class="mt-4 pt-4 border-t border-gray-200">
-  <h3 class="text-sm font-medium text-gray-700 mb-3">Custom Colors</h3>
-  <div class="grid grid-cols-3 gap-4">
-    <div>
-      <label class="text-xs text-gray-500 block mb-1">Wave Color</label>
-      <input type="color" id="customColor1" value="#0088cc" class="w-full h-10 rounded-lg border border-gray-300 p-0.5 cursor-pointer">
+        <!-- General -->
+        <div class="settings-pane" id="paneGeneral" style="display:block">
+          <section>
+            <div style="padding-bottom:8px;border-bottom:1px solid rgba(195,198,213,0.3);margin-bottom:20px">
+              <h4 style="font-size:16px;font-weight:600;color:#0b1c30">General</h4>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#fff;border-radius:10px;border:1px solid rgba(195,198,213,0.5);margin-bottom:20px">
+              <div>
+                <label style="font-size:14px;font-weight:600;color:#0b1c30;display:block;cursor:pointer" for="taskPopupToggle">Show task popup on start</label>
+                <p style="font-size:12px;color:#6B7280;margin-top:4px">Automatically open the add task dialog when timer starts</p>
+              </div>
+              <div class="toggle-switch active" id="taskPopupToggle" onclick="toggleTaskPopup()">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+          </section>
+          <section style="margin-top:24px">
+            <div style="padding-bottom:8px;border-bottom:1px solid rgba(195,198,213,0.3);margin-bottom:16px">
+              <h4 style="font-size:16px;font-weight:600;color:#0b1c30">Updates</h4>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#fff;border-radius:10px;border:1px solid rgba(195,198,213,0.5);margin-bottom:10px">
+              <div>
+                <label style="font-size:14px;font-weight:600;color:#0b1c30;display:block;cursor:pointer">Check for updates</label>
+                <p style="font-size:12px;color:#6B7280;margin-top:4px">Manually check if a new version is available</p>
+              </div>
+              <button id="checkUpdateBtn" onclick="checkForUpdates()" style="padding:9px 20px;background:#0e58c5;color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:500;transition:opacity 0.15s;white-space:nowrap" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Search for Updates</button>
+            </div>
+            <div id="updateSettingsStatus" style="font-size:12px;color:#9CA3AF;text-align:center;display:none"></div>
+          </section>
+        </div>
+
+        <!-- Pomodoro -->
+        <div class="settings-pane" id="panePomodoro" style="display:none">
+          <section>
+            <div style="padding-bottom:8px;border-bottom:1px solid rgba(195,198,213,0.3);margin-bottom:16px">
+              <h4 style="font-size:16px;font-weight:600;color:#0b1c30">Session Duration</h4>
+            </div>
+            <p style="font-size:13px;color:#6B7280;margin-bottom:16px">Set the duration for work and break sessions in minutes.</p>
+            <div class="settings-timer-row">
+              <span style="font-size:14px;font-weight:600;color:#0b1c30">Focus</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <button onclick="window.stepSetting('settingWork',-1);markDirty()" class="settings-step-btn">-</button>
+                <input type="number" id="settingWork" value="25" min="1" max="90" class="settings-timer-input">
+                <button onclick="window.stepSetting('settingWork',1);markDirty()" class="settings-step-btn">+</button>
+              </div>
+            </div>
+            <div class="settings-timer-row">
+              <span style="font-size:14px;font-weight:600;color:#0b1c30">Short Break</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <button onclick="window.stepSetting('settingShortBreak',-1);markDirty()" class="settings-step-btn">-</button>
+                <input type="number" id="settingShortBreak" value="5" min="1" max="30" class="settings-timer-input">
+                <button onclick="window.stepSetting('settingShortBreak',1);markDirty()" class="settings-step-btn">+</button>
+              </div>
+            </div>
+            <div class="settings-timer-row">
+              <span style="font-size:14px;font-weight:600;color:#0b1c30">Long Break</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <button onclick="window.stepSetting('settingLongBreak',-1);markDirty()" class="settings-step-btn">-</button>
+                <input type="number" id="settingLongBreak" value="15" min="1" max="60" class="settings-timer-input">
+                <button onclick="window.stepSetting('settingLongBreak',1);markDirty()" class="settings-step-btn">+</button>
+              </div>
+            </div>
+          </section>
+
+          <section style="margin-top:32px">
+            <div style="padding-bottom:8px;border-bottom:1px solid rgba(195,198,213,0.3);margin-bottom:16px">
+              <h4 style="font-size:16px;font-weight:600;color:#0b1c30">Sound</h4>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#fff;border-radius:10px;border:1px solid rgba(195,198,213,0.5);margin-bottom:20px">
+              <div>
+                <label style="font-size:14px;font-weight:600;color:#0b1c30;display:block;cursor:pointer" for="pomoSoundToggle">Pomodoro sounds</label>
+                <p style="font-size:12px;color:#6B7280;margin-top:4px">Play sound on session start and end</p>
+              </div>
+              <div class="toggle-switch active" id="pomoSoundToggle" onclick="togglePomoSound()">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+          </section>
+
+          <section style="margin-top:32px">
+            <div style="padding-bottom:8px;border-bottom:1px solid rgba(195,198,213,0.3);margin-bottom:16px;display:flex;justify-content:space-between;align-items:end">
+              <h4 style="font-size:16px;font-weight:600;color:#0b1c30">Timer Theme</h4>
+            </div>
+            <p style="font-size:13px;color:#6B7280;margin-bottom:16px">Choose the visual style for the pomodoro timer.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" id="pomoThemeGrid"></div>
+            <div style="background:#f8f9ff;padding:16px;border-radius:10px;border:1px solid rgba(195,198,213,0.3);margin-top:20px" id="customColorsBox">
+              <h5 style="font-size:12px;font-weight:700;color:#0b1c30;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px">Custom Colors</h5>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;font-weight:500">Color 1</label>
+                  <input type="color" id="customColor1" value="#0088cc" style="width:100%;height:36px;border-radius:6px;border:1px solid #D1D5DB;padding:2px;cursor:pointer;background:none">
+                </div>
+                <div>
+                  <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;font-weight:500">Color 2</label>
+                  <input type="color" id="customColor2" value="#4da8da" style="width:100%;height:36px;border-radius:6px;border:1px solid #D1D5DB;padding:2px;cursor:pointer;background:none">
+                </div>
+                <div>
+                  <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;font-weight:500">Background</label>
+                  <input type="color" id="customBgColor" value="#ffffff" style="width:100%;height:36px;border-radius:6px;border:1px solid #D1D5DB;padding:2px;cursor:pointer;background:none">
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Storage -->
+        <div class="settings-pane" id="paneStorage" style="display:none">
+          <section>
+            <div style="padding-bottom:8px;border-bottom:1px solid rgba(195,198,213,0.3);margin-bottom:20px">
+              <h4 style="font-size:16px;font-weight:600;color:#0b1c30">Storage Location</h4>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span style="display:flex;align-items:center;gap:8px;flex:1;padding:10px 14px;background:#fff;border:1px solid rgba(195,198,213,0.5);border-radius:8px;font-size:13px;color:#6B7280;overflow:hidden">
+                <span class="material-symbols-outlined" style="font-size:18px;color:#9CA3AF;flex-shrink:0">folder</span>
+                <span id="storagePathDisplay" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">...</span>
+              </span>
+              <button onclick="selectStoragePath()" style="padding:10px 20px;background:#fff;color:#0e58c5;border:1px solid rgba(195,198,213,0.5);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.background='#f8f9ff'" onmouseout="this.style.background='#fff'">Browse...</button>
+            </div>
+          </section>
+          <div style="display:flex;justify-content:center;margin-top:32px;padding-top:20px;border-top:1px solid #E5E7EB">
+            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="ahmedghazi" data-color="#FFDD00" data-emoji="" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" integrity="sha384-OibPdNn05smfqAFi21q8C4YkzZLEjwXs7kTtiqrJwOv7PtZefVaGPzKgX4rJfvWv" crossorigin="anonymous"></script>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div>
-      <label class="text-xs text-gray-500 block mb-1">Wave 2</label>
-      <input type="color" id="customColor2" value="#4da8da" class="w-full h-10 rounded-lg border border-gray-300 p-0.5 cursor-pointer">
-    </div>
-    <div>
-      <label class="text-xs text-gray-500 block mb-1">Background</label>
-      <input type="color" id="customBgColor" value="#ffffff" class="w-full h-10 rounded-lg border border-gray-300 p-0.5 cursor-pointer">
+    <!-- Footer -->
+    <div style="padding:14px 28px;background:#fff;border-top:1px solid rgba(195,198,213,0.3);display:none;justify-content:flex-end;gap:10px;flex-shrink:0" id="settingsBtnRow">
+      <button id="settingsCancelBtn" onclick="cancelSettings()" style="padding:9px 24px;border:1px solid #D1D5DB;border-radius:8px;font-size:13px;color:#6B7280;background:#fff;cursor:pointer;font-weight:500;transition:all 0.15s" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='#fff'">Cancel</button>
+      <button onclick="saveSettings()" style="padding:9px 24px;background:#0e58c5;color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;transition:all 0.15s" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Save Changes</button>
     </div>
   </div>
-  <button onclick="applyCustomColors()" class="mt-3 px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors">Apply Custom</button>
-</div>
-</div>
-
-<div class="flex justify-end gap-3 mt-8">
-<button onclick="cancelSettings()" class="px-6 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-colors font-medium">Cancel</button>
-<button onclick="saveSettings()" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-opacity-90 transition-colors">Save Changes</button>
-</div>
-<div style="display:flex;justify-content:center;margin-top:32px;padding-top:24px;border-top:1px solid #E5E7EB">
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="ahmedghazi" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
-</div>
 </div>
 </div>
 
@@ -585,7 +634,7 @@ window.tailwind={ config: {
       <img src="assets/Jamrah-Icon.svg" alt="Jamrah" style="width:40px;height:40px"/>
       <div>
         <h3 style="font-size:22px;font-weight:700;color:#1F2937">Jamrah جَــمْــرَه</h3>
-        <p style="font-size:14px;color:#6B7280">New version: <span id="updateVersion" style="font-weight:700;color:#374151"></span></p>
+        <p style="font-size:14px;color:#6B7280">New version: <span id="updateVersion" style="font-weight:700;color:#374151"></span> <span id="updateSize" style="font-size:12px;color:#9CA3AF;margin-left:4px"></span></p>
       </div>
     </div>
     <label style="font-size:13px;font-weight:600;color:#6B7280;margin-bottom:8px;display:block">Release Notes</label>
@@ -601,40 +650,102 @@ window.tailwind={ config: {
   </div>
 </div>
 
-<!-- Restore old data modal -->
-<div id="restoreModal" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;padding:20px;display:none">
-  <div style="background:white;border-radius:16px;padding:28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.15);position:relative;text-align:center">
-    <div style="font-size:40px;margin-bottom:12px">📂</div>
-    <h3 style="font-size:20px;font-weight:700;color:#1F2937;margin-bottom:8px">Old Data Found</h3>
-    <p style="font-size:14px;color:#6B7280;line-height:1.6;margin-bottom:24px">
-      We found saved data from a previous version.<br>
-      Would you like to restore it or start fresh?
-    </p>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button onclick="skipOldData()" style="padding:10px 24px;border:1px solid #D1D5DB;border-radius:10px;font-size:13px;color:#6B7280;background:white;cursor:pointer;font-weight:500">Start Fresh</button>
-      <button onclick="restoreOldData()" style="padding:10px 24px;background:#3B82F6;color:white;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600">Restore</button>
+<!-- Welcome popup (shown once, first launch) -->
+<div id="welcomeModal" style="position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;padding:20px;display:none">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:620px;max-height:85vh;box-shadow:0 25px 80px rgba(0,0,0,0.2);position:relative;overflow:hidden;display:flex;flex-direction:column">
+    <div style="height:6px;background:linear-gradient(90deg,#0e58c5,#3B82F6,#8B5CF6);flex-shrink:0"></div>
+    <div style="padding:32px 32px 24px;text-align:center;overflow-y:auto;flex:1">
+      <img src="assets/gifs/jewelry-for-updates.gif" alt="" style="width:90px;margin:0 auto 12px;display:block"/>
+      <h2 style="font-size:24px;font-weight:800;color:#0b1c30;margin-bottom:4px">Hi 🖐</h2>
+      <p style="font-size:14px;color:#4B5563;line-height:1.7;text-align:left;margin-bottom:16px">
+        I'm <strong>Ahmed</strong>, a .NET backend developer and a Computer Science student.
+      </p>
+      <p style="font-size:14px;color:#4B5563;line-height:1.7;text-align:left;margin-bottom:16px">
+        I built <strong>Jamrah</strong> to help students and anyone who wants to stay focused and productive — but couldn't find a simple, beautiful, and <strong>completely free</strong> app that does the job without all the clutter. So I made one.
+      </p>
+      <p style="font-size:14px;color:#4B5563;line-height:1.7;text-align:left;margin-bottom:16px">
+        My dream is to turn this into a full cross-platform mobile app someday — it's on my roadmap! In the meantime, it's fully <strong>open source</strong>. If anyone wants to contribute or build on it, you'd be helping the whole community.
+      </p>
+      <p style="font-size:14px;color:#4B5563;line-height:1.7;text-align:left;margin-bottom:16px">
+        I'm a backend .NET dev by trade — frontend isn't really my lane. This was built with <strong>vibe coding</strong>! I put a lot of effort into keeping the design clean and giving you full control over everything: colors, sounds, buttons — you name it. I'm still actively developing it, making it simpler every day.
+      </p>
+      <p style="font-size:14px;color:#4B5563;line-height:1.7;text-align:left;margin-bottom:16px">
+        If you just want a <strong>Pomodoro timer</strong> — the app will be just that. If you want <strong>habit tracking</strong> — it'll be just that too. Everything is under <strong>your control</strong>. You choose what to use and how to use it, exactly the way you like. No distractions. No payments.
+      </p>
+      <p style="font-size:14px;color:#4B5563;line-height:1.7;text-align:left;margin-bottom:20px">
+        I'm constantly updating the app, fixing bugs, improving the design, and adding more features. Hope you enjoy it! &#x1F604;&#x1F4AA;
+      </p>
+
+      <!-- Action boxes -->
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <!-- Buy Me a Coffee -->
+        <a onclick="window.electronAPI.openUrl('https://buymeacoffee.com/ahmedghazi')" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;background:#FFDD00;color:#000;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2a2 2 0 002-2V5a2 2 0 00-2-2zm0 5h-2V5h2v3zM2 21h18v2H2v-2z"/></svg>
+          Buy Me a Coffee
+        </a>
+        <!-- Contribute on GitHub -->
+        <a onclick="window.electronAPI.openUrl('https://github.com/AhmMed29/jamrah')" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;background:#24292F;color:#fff;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          Contribute on GitHub
+        </a>
+        <!-- LinkedIn -->
+        <a onclick="window.electronAPI.openUrl('https://www.linkedin.com/in/ahmed-mohamed-56712a350/')" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;background:#0A66C2;color:#fff;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Let's Connect on LinkedIn
+        </a>
+      </div>
+
+      <p style="font-size:13px;color:#9CA3AF;line-height:1.6;margin-bottom:16px">
+        Made with love &#x1F493;&#x1F91E;<br>
+        Hope you produce better with our app! &#x1F646;&#x200D;&#x2642;&#xFE0F;
+      </p>
+
+      <button onclick="closeWelcomeModal()" style="padding:12px 48px;background:#0b1c30;color:#fff;border:none;border-radius:12px;font-size:15px;cursor:pointer;font-weight:600;transition:opacity 0.15s;width:100%;max-width:240px" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Get Started</button>
     </div>
   </div>
 </div>
 
-<!-- Welcome popup (shown once after update) -->
-<div id="welcomeModal" style="position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;padding:20px;display:none">
-  <div style="background:white;border-radius:16px;padding:28px;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.15);position:relative">
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
-      <img src="assets/Jamrah-Icon.svg" alt="Jamrah" style="width:48px;height:48px"/>
-      <div>
-        <h3 style="font-size:22px;font-weight:700;color:#1F2937">Welcome to Jamrah جَــمْــرَه</h3>
-        <p style="font-size:14px;color:#6B7280">v1.2.2 — What's new</p>
-      </div>
-    </div>
-    <div style="font-size:13px;color:#4B5563;background:#F9FAFB;border-radius:12px;padding:14px;max-height:260px;overflow-y:auto;margin-bottom:20px;line-height:1.6" id="welcomeReleaseNotes"></div>
-    <div style="display:flex;justify-content:flex-end">
-      <button onclick="closeWelcomeModal()" style="padding:10px 32px;background:#000;color:white;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600">OK</button>
-    </div>
-    <div style="display:flex;justify-content:center;margin-top:16px;padding-top:16px;border-top:1px solid #E5E7EB">
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="ahmedghazi" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+<!-- Unsaved settings confirmation modal -->
+<div id="settingsConfirmModal" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;padding:20px;display:none" onclick="closeSettingsConfirm(event)">
+  <div style="background:white;border-radius:16px;padding:28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.15);position:relative;text-align:center" onclick="event.stopPropagation()">
+    <h3 style="font-size:18px;font-weight:700;color:#1F2937;margin-bottom:8px">Unsaved Changes</h3>
+    <p style="font-size:14px;color:#6B7280;line-height:1.6;margin-bottom:24px">
+      You have unsaved settings changes. What would you like to do?
+    </p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button onclick="closeSettingsConfirm(event)" style="padding:10px 20px;border:1px solid #D1D5DB;border-radius:10px;font-size:13px;color:#6B7280;background:white;cursor:pointer;font-weight:500">Cancel</button>
+      <button onclick="confirmSettingsDiscard()" style="padding:10px 20px;border:1px solid #EF4444;border-radius:10px;font-size:13px;color:#EF4444;background:white;cursor:pointer;font-weight:500">Discard</button>
+      <button onclick="confirmSettingsSave()" style="padding:10px 20px;background:#3B82F6;color:white;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600">Save</button>
     </div>
   </div>
+</div>
+
+<!-- Floating Dock Navigation -->
+<div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
+<div class="floating-menu-glass rounded-full px-3 py-2 sm:px-4 sm:py-2.5 flex items-center gap-1 sm:gap-2">
+<nav class="flex items-center gap-1 sm:gap-2" id="navDock">
+<button class="dock-item flex flex-col items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl transition-colors text-tickgray-500 hover:bg-blue-50 hover:text-tickblue" data-page="pomodoro" onclick="showPage('pomodoro');window.AudioManager?.playSound('tab-swipping.mp3')">
+<span class="material-symbols-outlined text-lg sm:text-xl">timer</span>
+<span class="text-[9px] sm:text-[10px] font-medium mt-0.5 leading-tight">Focus</span>
+</button>
+<button class="dock-item flex flex-col items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl transition-colors text-tickgray-500 hover:bg-blue-50 hover:text-tickblue" data-page="tasks" onclick="showPage('tasks');window.AudioManager?.playSound('tab-swipping.mp3')">
+<span class="material-symbols-outlined text-lg sm:text-xl">check_circle</span>
+<span class="text-[9px] sm:text-[10px] font-medium mt-0.5 leading-tight">Tasks</span>
+</button>
+<button class="dock-item flex flex-col items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl transition-colors text-tickgray-500 hover:bg-blue-50 hover:text-tickblue" data-page="goals" onclick="showPage('goals');window.AudioManager?.playSound('tab-swipping.mp3')">
+<span class="material-symbols-outlined text-lg sm:text-xl">bar_chart</span>
+<span class="text-[9px] sm:text-[10px] font-medium mt-0.5 leading-tight">Goals</span>
+</button>
+<button class="dock-item flex flex-col items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl transition-colors text-tickgray-500 hover:bg-blue-50 hover:text-tickblue" data-page="habits" onclick="showPage('habits');window.AudioManager?.playSound('tab-swipping.mp3')">
+<span class="material-symbols-outlined text-lg sm:text-xl">checklist</span>
+<span class="text-[9px] sm:text-[10px] font-medium mt-0.5 leading-tight">Habits</span>
+</button>
+<button class="dock-item flex flex-col items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl transition-colors text-tickgray-500 hover:bg-blue-50 hover:text-tickblue" data-page="settings" onclick="openSettings();window.AudioManager?.playSound('tab-swipping.mp3')">
+<span class="material-symbols-outlined text-lg sm:text-xl">settings</span>
+<span class="text-[9px] sm:text-[10px] font-medium mt-0.5 leading-tight">Settings</span>
+</button>
+</nav>
+</div>
 </div>
 
 <script src="js/storage.js"></script>

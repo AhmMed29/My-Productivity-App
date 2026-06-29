@@ -1,5 +1,5 @@
 {
-  "version": "1.2.2",
-  "downloadUrl": "https://github.com/AhmMed29/My-Productivity-App/releases/download/v1.2.2/Jamrah-Setup-1.2.2.exe",
-  "releaseNotes": "v1.2.2 — Jamrah جَــمْــرَه\n\n## ✨ Rebrand\n- New app name: **Jamrah** (جمرة) — ember of productivity\n- New icon (SVG)\n\n## 🎨 Improvements\n- Settings sheet now white theme with black borders\n- Removed progress ring from pomodoro timer\n- Smooth slide-up/down animation for settings sheet\n- Confirmation modals for delete habit, delete task, end session\n- Goal tasks with Added/Done labels\n- Session name input box\n- Pomodoro controls hide when timer running\n\n## 🐛 Bug Fixes\n- Fixed End button not working when timer paused\n- Fixed timer preset not updating when paused\n- Fixed progress ring position\n- Fixed dark text visibility in end popup"
+  "version": "1.3.0",
+  "downloadUrl": "https://github.com/AhmMed29/jamrah/releases/download/v1.3.0/Jamrah-Setup-1.3.0.exe",
+  "releaseNotes": "v1.3.0 — Jamrah جَــمْــرَه\n\n## ✨ New\n- First-run welcome popup with app story, support links & contributor info\n- Tabbed settings modal (General / Pomodoro / Storage)\n- \"Search for Updates\" button in Settings for manual update checks\n- Update file size shown in update modal\n\n## 🌐 Language\n- Settings modal translated to English\n\n## 🎨 Design\n- Minimal pomodoro theme (removed progress ring)\n- Settings sidebar tabs now visible\n- White theme with clean borders"
 }
