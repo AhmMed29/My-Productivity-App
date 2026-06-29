@@ -20,7 +20,6 @@ An all-in-one **Electron** desktop app: Pomodoro timer with live GLSL shader bac
 - **🎨 Shader Themes** — 5 animated GLSL themes + custom color pickers + new **Minimal** (text-only) mode
 - **⚙️ Tabbed Settings** — General / Pomodoro / Storage with timer durations, sound toggle, theme grid, storage path
 - **🔄 Auto-Update** — Checks GitHub Releases on launch; shows size, progress bar, and manual **Search for Updates** button in Settings
-- **👋 First-Run Welcome** — One-time popup with Buy Me a Coffee + GitHub contribute links
 - **🗄️ SQLite Persistence** — All data stored locally with automatic JSON migration
 
 ---
