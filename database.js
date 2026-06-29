@@ -120,6 +120,10 @@ const MIGRATIONS = [
     try { db.exec("ALTER TABLE habits ADD COLUMN durationType TEXT DEFAULT 'yearly'"); } catch(e) {}
     try { db.exec('ALTER TABLE habits ADD COLUMN durationStart TEXT'); } catch(e) {}
     try { db.exec('ALTER TABLE habits ADD COLUMN durationEnd TEXT'); } catch(e) {}
+  },
+  function v9(db) {
+    try { db.exec('ALTER TABLE tasks ADD COLUMN parentTaskId TEXT REFERENCES tasks(id)'); } catch(e) {}
+    try { db.exec('CREATE INDEX IF NOT EXISTS idx_tasks_parent ON tasks(parentTaskId)'); } catch(e) {}
   }
 ];
 
@@ -458,8 +462,16 @@ function toggleTask(id) {
   } catch (e) { return false; }
 }
 
+function updateTask(id, name) {
+  try {
+    db.prepare('UPDATE tasks SET name = ? WHERE id = ?').run(name, id);
+    return true;
+  } catch (e) { return false; }
+}
+
 function deleteTask(id) {
   try {
+    db.prepare('DELETE FROM tasks WHERE parentTaskId = ?').run(id);
     db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
     return true;
   } catch (e) { return false; }
@@ -534,7 +546,7 @@ module.exports = {
   migrateFromJson, setPath, getPath,
   getGoals, getGoal, createGoal, updateGoal, deleteGoal,
   getGoalProgress, saveGoalProgress,
-  getTasks, createTask, toggleTask, deleteTask,
+  getTasks, createTask, toggleTask, updateTask, deleteTask,
   getHabits, createHabit, updateHabit, deleteHabit,
   getHabitLogs, setHabitLog
 };

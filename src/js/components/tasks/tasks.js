@@ -8,21 +8,112 @@ function renderTasks() {
       list.innerHTML = '<div class="text-center py-16"><div class="text-gray-300 text-5xl mb-4"><svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><p class="text-gray-400 text-sm">No tasks yet. Tap + to add one.</p></div>';
       return;
     }
-    var html = '';
+    var childMap = {};
+    var topLevel = [];
     for (var ti = 0; ti < tasks.length; ti++) {
       var t = tasks[ti];
-      var doneClass = t.completed ? 'done' : '';
-      var checkClass = t.completed ? 'done' : '';
-      var badge = t.goalId ? '<span class="task-goal-badge">Goal</span>' : '';
-      html +=
-        '<div class="task-item" data-task-id="' + t.id + '">' +
-          '<div class="task-check ' + checkClass + '" onclick="toggleTask(\'' + t.id + '\')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>' +
-          '<span class="task-name ' + doneClass + '">' + t.name + '</span>' +
-          badge +
-          '<button class="task-delete" onclick="deleteTask(\'' + t.id + '\')"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>' +
-        '</div>';
+      if (t.parentTaskId) {
+        if (!childMap[t.parentTaskId]) childMap[t.parentTaskId] = [];
+        childMap[t.parentTaskId].push(t);
+      } else {
+        topLevel.push(t);
+      }
+    }
+    var html = '';
+    for (var tti = 0; tti < topLevel.length; tti++) {
+      html += renderTaskItem(topLevel[tti]);
+      var subs = childMap[topLevel[tti].id] || [];
+      for (var si = 0; si < subs.length; si++) {
+        html += renderTaskItem(subs[si], true);
+      }
     }
     list.innerHTML = html;
+  });
+}
+
+function renderTaskItem(t, isSub) {
+  var doneClass = t.completed ? 'done' : '';
+  var checkClass = t.completed ? 'done' : '';
+  var badge = t.goalId ? '<span class="task-goal-badge">Goal</span>' : '';
+  var subClass = isSub ? ' task-sub' : '';
+  var itemId = 'task-item-' + t.id;
+  return (
+    '<div class="task-item' + subClass + '" data-task-id="' + t.id + '" id="' + itemId + '">' +
+      '<div class="task-check ' + checkClass + '" onclick="toggleTask(\'' + t.id + '\')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>' +
+      '<span class="task-name ' + doneClass + '">' + t.name + '</span>' +
+      badge +
+      '<div class="task-menu-wrap">' +
+        '<button class="task-menu-btn" onclick="event.stopPropagation();toggleTaskMenu(\'' + t.id + '\')"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>' +
+        '<div class="task-menu-dropdown" id="menu-' + t.id + '">' +
+          '<div class="task-menu-item" onclick="event.stopPropagation();editTask(\'' + t.id + '\')">Edit</div>' +
+          '<div class="task-menu-item task-menu-item-danger" onclick="event.stopPropagation();deleteTask(\'' + t.id + '\')">Delete</div>' +
+          '<div class="task-menu-item" onclick="event.stopPropagation();addSubtask(\'' + t.id + '\')">Add Subtask</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+function toggleTaskMenu(id) {
+  closeTaskMenus(id);
+  var menu = document.getElementById('menu-' + id);
+  if (menu) menu.classList.toggle('open');
+}
+
+function closeTaskMenus(exceptId) {
+  var all = document.querySelectorAll('.task-menu-dropdown.open');
+  for (var mi = 0; mi < all.length; mi++) {
+    var menuId = all[mi].id.replace('menu-', '');
+    if (menuId !== exceptId) all[mi].classList.remove('open');
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.task-menu-wrap')) {
+    closeTaskMenus();
+  }
+});
+
+function editTask(id) {
+  closeTaskMenus();
+  window.db.getTasks().then(function(tasks) {
+    var task = null;
+    for (var ei = 0; ei < tasks.length; ei++) {
+      if (tasks[ei].id === id) { task = tasks[ei]; break; }
+    }
+    if (!task) return;
+    var newName = prompt('Edit task name:', task.name);
+    if (newName && newName.trim() && newName.trim() !== task.name) {
+      window.db.updateTask(id, newName.trim()).then(function() { renderTasks(); });
+    }
+  });
+}
+
+function addSubtask(parentId) {
+  closeTaskMenus();
+  window.db.getTasks().then(function(tasks) {
+    var parentName = '';
+    for (var ai = 0; ai < tasks.length; ai++) {
+      if (tasks[ai].id === parentId) { parentName = tasks[ai].name; break; }
+    }
+    var name = prompt('Add subtask under "' + parentName + '":');
+    if (name && name.trim()) {
+      var task = { id: 'task_' + Date.now(), name: name.trim(), parentTaskId: parentId };
+      window.db.createTask(task).then(function(result) {
+        if (result === true) renderTasks();
+      });
+    }
+  });
+}
+
+function toggleTask(id) {
+  window.db.toggleTask(id).then(function() { renderTasks(); });
+}
+
+function deleteTask(id) {
+  closeTaskMenus();
+  showConfirmModal('Delete Task', 'Are you sure you want to delete this task?', 'Delete', function() {
+    window.db.deleteTask(id).then(function() { renderTasks(); });
   });
 }
 
@@ -64,16 +155,6 @@ function saveTask() {
       closeAddTaskPopup();
       renderTasks();
     }
-  });
-}
-
-function toggleTask(id) {
-  window.db.toggleTask(id).then(function() { renderTasks(); });
-}
-
-function deleteTask(id) {
-  showConfirmModal('Delete Task', 'Are you sure you want to delete this task?', 'Delete', function() {
-    window.db.deleteTask(id).then(function() { renderTasks(); });
   });
 }
 
@@ -127,9 +208,9 @@ function openGoalsTaskPopup() {
         var t = myTasks[oti2];
         var lbl = '';
         if (t.completed) {
-          lbl = '<span class="gt-label gt-label-done">✔ Done</span>';
+          lbl = '<span class="gt-label gt-label-done">&#10003; Done</span>';
         } else {
-          lbl = '<span class="gt-label gt-label-added">✔ Added</span>';
+          lbl = '<span class="gt-label gt-label-added">&#10003; Added</span>';
         }
         h += '<div class="gt-task" data-task-id="' + t.id + '" style="padding-left:' + ((depth + 1) * 20 + 28) + 'px">';
         h += '<span class="gt-task-dot"></span>';
@@ -140,13 +221,13 @@ function openGoalsTaskPopup() {
       h += '</div></div>';
       return h;
     }
-    var html = '';
+    var goalHtml = '';
     for (var ogi2 = 0; ogi2 < goals.length; ogi2++) {
       if (!goals[ogi2].parentGoalId) {
-        html += renderNode(goals[ogi2], 0);
+        goalHtml += renderNode(goals[ogi2], 0);
       }
     }
-    tree.innerHTML = html || '<div class="text-center py-8 text-gray-400">No goals yet. Create goals first!</div>';
+    tree.innerHTML = goalHtml || '<div class="text-center py-8 text-gray-400">No goals yet. Create goals first!</div>';
   });
 }
 

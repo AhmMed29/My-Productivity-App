@@ -325,6 +325,11 @@ ipcMain.handle('db:delete-task', async (e, id) => {
   return database.deleteTask(id);
 });
 
+ipcMain.handle('db:update-task', async (e, id, name) => {
+  if (!is('string', id) || !is('string', name)) return null
+  return database.updateTask(id, name);
+});
+
 // ---- Habits IPC ----
 ipcMain.handle('db:get-habits', async () => {
   return database.getHabits();

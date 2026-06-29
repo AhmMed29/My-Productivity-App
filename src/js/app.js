@@ -84,7 +84,7 @@ updateClock();
 setInterval(updateClock, 1000);
 
 /* ── Update system (electron-updater) ── */
-var APP_VERSION = '1.3.0';
+var APP_VERSION = '1.3.1';
 var updateData = null;
 var updateDownloaded = false;
 

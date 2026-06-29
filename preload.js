@@ -56,6 +56,7 @@ var db = {
   getTasks: (goalId) => ipcRenderer.invoke('db:get-tasks', goalId),
   createTask: (task) => ipcRenderer.invoke('db:create-task', task),
   toggleTask: (id) => ipcRenderer.invoke('db:toggle-task', id),
+  updateTask: (id, name) => ipcRenderer.invoke('db:update-task', id, name),
   deleteTask: (id) => ipcRenderer.invoke('db:delete-task', id),
   getHabits: () => ipcRenderer.invoke('db:get-habits'),
   createHabit: (habit) => ipcRenderer.invoke('db:create-habit', habit),

@@ -149,8 +149,22 @@
 .task-item .task-name { flex: 1; font-size: 14px; color: #374151; }
 .task-item .task-name.done { text-decoration: line-through; color: #9CA3AF; }
 .task-item .task-goal-badge { font-size: 11px; color: #6B7280; background: #F3F4F6; padding: 3px 10px; border-radius: 10px; white-space: nowrap; }
-.task-item .task-delete { width: 28px; height: 28px; border-radius: 8px; border: none; background: none; cursor: pointer; color: #D1D5DB; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
-.task-item .task-delete:hover { background: #FEF2F2; color: #EF4444; }
+.task-item .task-goal-badge { margin-right: 4px; }
+.task-item.task-sub { margin-left: 36px; margin-bottom: 6px; padding: 10px 16px; }
+.task-item.task-sub .task-check { width: 18px; height: 18px; }
+.task-item.task-sub .task-name { font-size: 13px; }
+
+/* ── Task three-dot menu ── */
+.task-menu-wrap { position: relative; flex-shrink: 0; }
+.task-menu-btn { width: 28px; height: 28px; border-radius: 8px; border: none; background: none; cursor: pointer; color: #D1D5DB; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.task-item:hover .task-menu-btn { color: #9CA3AF; }
+.task-menu-btn:hover { background: #F3F4F6; color: #374151 !important; }
+.task-menu-dropdown { display: none; position: absolute; right: 0; top: 100%; z-index: 100; background: #fff; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04); padding: 4px; min-width: 130px; margin-top: 4px; }
+.task-menu-dropdown.open { display: block; }
+.task-menu-item { padding: 7px 14px; font-size: 13px; color: #374151; cursor: pointer; border-radius: 6px; transition: background 0.1s; }
+.task-menu-item:hover { background: #F3F4F6; }
+.task-menu-item-danger { color: #EF4444; }
+.task-menu-item-danger:hover { background: #FEF2F2; }
 
 /* ── Goals Hierarchy Popup (3.8) ── */
 #goals-task-tree { scrollbar-width: thin; }
