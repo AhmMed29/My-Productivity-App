@@ -62,14 +62,15 @@ src/
 # ✨Features
 ## Simple Pomodoro 🍅
 
-![Pomodoro Timer](src/assets/screenshots/Jamrah_AEBVDLM4uS.png)
+![Simple Pomodoro](src/assets/screenshots/Simple%20Pomodoro.png)
+
 ## Add Tasks ✔
 
-![Tasks](src/assets/screenshots/Pasted-image-20260629230335.png)
+![Add Tasks](src/assets/screenshots/Add%20Tasks.png)
 # Set a Goal 🎯
 👉 Goals might be weekly, monthly or quartarly or yearly or customize it 🛠!
 
-![Goals](src/assets/screenshots/Pasted-image-20260629230343.png)
+![Set a Goal](src/assets/screenshots/Set%20a%20Goal.png)
 
 ### Alert ❕ 
 
@@ -80,7 +81,7 @@ The Goals Tab doesn't working well at all ! it needs alot of improvements ! so i
 - SubGoals
 - more by the time ....
 
-![Goals Detail](src/assets/screenshots/Pasted-image-20260629230352.png)
+![Alert](src/assets/screenshots/Alert.png)
 ## 🤸‍♀️ Habit Tracker 
 
 Track Your habit as if it were in a paper ! 
@@ -91,7 +92,7 @@ Track Your habit as if it were in a paper !
 - the statistics of the habit during your week, month and the whole year !
 - make the (everyday habit) add to tasks automaticaly and if the habit related to one by one day it will appear in this day automaticaly to make it more linkable !
 - Support English 
-![Habit Tracker](src/assets/screenshots/Pasted-image-20260629230358.png)
+![Habit Tracker](src/assets/screenshots/Habit%20Tracker.png)
 ## ⚙ Customized Setting Based On Your Preferences 
 
 ⭐ The Main Idea of this app was to make the user choose his preferences in each component in the app ... hide or display any tab or any button or anything by your preferences ! 
@@ -100,7 +101,7 @@ Track Your habit as if it were in a paper !
 
 We Are Working on each button to make the user has full control on anything and everything !
 
-![Settings](src/assets/screenshots/Pasted-image-20260629230407.png)
+![Customized Setting Based On Your Preferences](src/assets/screenshots/Customized%20Setting%20Based%20On%20Your%20Preferences.png)
 
 ---
 
