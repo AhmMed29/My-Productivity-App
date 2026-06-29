@@ -43,11 +43,11 @@ function renderTaskItem(t, isSub) {
       '<span class="task-name ' + doneClass + '">' + t.name + '</span>' +
       badge +
       '<div class="task-menu-wrap">' +
-        '<button class="task-menu-btn" onclick="event.stopPropagation();toggleTaskMenu(\'' + t.id + '\')"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>' +
+        '<button class="task-menu-btn" onclick="toggleTaskMenu(\'' + t.id + '\')"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>' +
         '<div class="task-menu-dropdown" id="menu-' + t.id + '">' +
-          '<div class="task-menu-item" onclick="event.stopPropagation();editTask(\'' + t.id + '\')">Edit</div>' +
-          '<div class="task-menu-item task-menu-item-danger" onclick="event.stopPropagation();deleteTask(\'' + t.id + '\')">Delete</div>' +
-          '<div class="task-menu-item" onclick="event.stopPropagation();addSubtask(\'' + t.id + '\')">Add Subtask</div>' +
+          '<div class="task-menu-item" onclick="editTask(\'' + t.id + '\')">Edit</div>' +
+          '<div class="task-menu-item task-menu-item-danger" onclick="deleteTask(\'' + t.id + '\')">Delete</div>' +
+          '<div class="task-menu-item" onclick="addSubtask(\'' + t.id + '\')">Add Subtask</div>' +
         '</div>' +
       '</div>' +
     '</div>'
@@ -69,7 +69,7 @@ function closeTaskMenus(exceptId) {
 }
 
 document.addEventListener('click', function(e) {
-  if (!e.target.closest('.task-menu-wrap')) {
+  if (!e.target.closest('.task-menu-btn') && !e.target.closest('.task-menu-dropdown')) {
     closeTaskMenus();
   }
 });
@@ -82,10 +82,12 @@ function editTask(id) {
       if (tasks[ei].id === id) { task = tasks[ei]; break; }
     }
     if (!task) return;
-    var newName = prompt('Edit task name:', task.name);
-    if (newName && newName.trim() && newName.trim() !== task.name) {
-      window.db.updateTask(id, newName.trim()).then(function() { renderTasks(); });
-    }
+    try {
+      var newName = prompt('Edit task name:', task.name);
+      if (newName && newName.trim() && newName.trim() !== task.name) {
+        window.db.updateTask(id, newName.trim()).then(function() { renderTasks(); });
+      }
+    } catch (e) {}
   });
 }
 
@@ -96,13 +98,15 @@ function addSubtask(parentId) {
     for (var ai = 0; ai < tasks.length; ai++) {
       if (tasks[ai].id === parentId) { parentName = tasks[ai].name; break; }
     }
-    var name = prompt('Add subtask under "' + parentName + '":');
-    if (name && name.trim()) {
-      var task = { id: 'task_' + Date.now(), name: name.trim(), parentTaskId: parentId };
-      window.db.createTask(task).then(function(result) {
-        if (result === true) renderTasks();
-      });
-    }
+    try {
+      var name = prompt('Add subtask under "' + parentName + '":');
+      if (name && name.trim()) {
+        var task = { id: 'task_' + Date.now(), name: name.trim(), parentTaskId: parentId };
+        window.db.createTask(task).then(function(result) {
+          if (result === true) renderTasks();
+        });
+      }
+    } catch (e) {}
   });
 }
 
@@ -190,7 +194,7 @@ function openGoalsTaskPopup() {
       var hasKids = kids.length > 0;
       var hasTasks = myTasks.length > 0;
       var h = '<div class="gt-node" data-id="' + g.id + '">';
-      h += '<div class="gt-row" style="padding-left:' + (depth * 20 + 8) + 'px" onclick="event.stopPropagation();toggleGoalsTaskNode(\'' + g.id + '\')">';
+      h += '<div class="gt-row" style="padding-left:' + (depth * 20 + 8) + 'px" onclick="toggleGoalsTaskNode(event,\'' + g.id + '\')">';
       if (hasKids || hasTasks) {
         h += '<span class="gt-chevron" id="gt-cv-' + g.id + '"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>';
       } else {
@@ -236,7 +240,8 @@ function closeGoalsTaskPopup(e) {
   document.getElementById('goals-task-popup').style.display = 'none';
 }
 
-function toggleGoalsTaskNode(id) {
+function toggleGoalsTaskNode(e, id) {
+  if (e) e.stopPropagation();
   var ch = document.getElementById('gt-ch-' + id);
   if (!ch) return;
   ch.style.display = ch.style.display === 'none' ? 'block' : 'none';

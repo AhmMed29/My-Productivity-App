@@ -150,7 +150,9 @@
 .task-item .task-name.done { text-decoration: line-through; color: #9CA3AF; }
 .task-item .task-goal-badge { font-size: 11px; color: #6B7280; background: #F3F4F6; padding: 3px 10px; border-radius: 10px; white-space: nowrap; }
 .task-item .task-goal-badge { margin-right: 4px; }
-.task-item.task-sub { margin-left: 36px; margin-bottom: 6px; padding: 10px 16px; }
+.task-item.task-sub { position: relative; margin-left: 36px; margin-bottom: 6px; padding: 10px 16px 10px 36px; }
+.task-item.task-sub::before { content: ''; position: absolute; left: -14px; top: 0; width: 20px; height: 50%; border-left: 2px solid #D1D5DB; border-bottom: 2px solid #D1D5DB; border-bottom-left-radius: 8px; pointer-events: none; }
+.task-item.task-sub:last-child::before { height: 50%; }
 .task-item.task-sub .task-check { width: 18px; height: 18px; }
 .task-item.task-sub .task-name { font-size: 13px; }
 

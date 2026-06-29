@@ -16,6 +16,7 @@ function is(type, val) {
 
 autoUpdater.autoDownload = false
 autoUpdater.autoInstallOnAppQuit = false
+autoUpdater.forceDevUpdateConfig = true
 
 autoUpdater.on('update-available', function(info) {
   if (win) win.webContents.send('update-available', info)
